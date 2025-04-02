@@ -23,4 +23,6 @@ Route::get('/dashboard', function () {
 
 require __DIR__.'/auth.php';
 
+
 Route::get('/BookingList','App\Http\Controllers\BookingController@getBookings');
+
