@@ -24,5 +24,9 @@ Route::get('/dashboard', function () {
 require __DIR__.'/auth.php';
 
 
-Route::get('/BookingList','App\Http\Controllers\BookingController@getBookings');
+Route::get('/BookingList','App\Http\Controllers\BookingController@getBookings')->name('booking.list');
+Route::post('booking/update/{id}', 'App\Http\Controllers\BookingController@updateBooking')->name('booking.update');
+Route::get('/booking/edit/{id}/{room}', 'App\Http\Controllers\BookingController@editBooking')->name('booking.edit');
+Route::post('/booking/insert', 'App\Http\Controllers\BookingController@storeBooking')->name('booking.insert');
+
 

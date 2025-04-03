@@ -1,7 +1,26 @@
+ <!-- Kiểm tra và hiển thị thông báo thành công -->
+ @if(session('status'))
+        <div class="alert alert-success">
+            {{session('status') }}
+        </div>
+    @endif
+
+    <!-- Kiểm tra và hiển thị lỗi -->
+    @if ($errors->any())
+        <div style="color:red; margin:0 auto;">
+            <div>{{ __('Whoops! Something went wrong.') }}</div>
+            <ul>
+                @foreach ($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                @endforeach
+            </ul>
+        </div>
+    @endif
 <x-Admin_Layout>
 <x-slot name='title'>
 Danh Sách Đặt Phòng
 </x-slot>
+
 
 <div class="content">
         <div class="header">
@@ -59,7 +78,7 @@ Danh Sách Đặt Phòng
                     <td>{{ $checkin->ngay_dat }}</td>
                     <td>
                         @if($checkin->checkindate >= date('Y-m-d'))
-                            <a href="{{ url('chinhsuadatphong?.id=' . $checkin->ma_booking . '&room=' . $checkin->phong) }}" class='edit'>✏️</a>
+                            <a href="{{route('booking.edit', ['id' => $checkin->ma_booking, 'room' => $checkin->phong]) }}" class='edit'>✏️</a>
                         @endif
                         <a href="#" onclick="deleteBooking('{{ $checkin->ma_booking  }}', '{{  $checkin->phong}}')" class='delete'>❌</a>
                     </td>

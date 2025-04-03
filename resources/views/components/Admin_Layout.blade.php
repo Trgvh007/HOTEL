@@ -30,7 +30,7 @@
             
             <li><a href="quanly.php">Sơ đồ khách sạn</a></li>
             <li class="active">
-            <a href="#" onclick="toggleMenu(event,'room-management-submenu')">Quản lý phòng </span></a>
+            <a href="#" onclick="toggleMenu('room-management-submenu')" >Quản lý phòng </span></a>
         <ul class="submenu" id="room-management-submenu" style="display: none;">
             <li><a href="#">Danh sách phòng</a></li>
             <li><a href="#">Phòng trống</a></li>
@@ -38,9 +38,9 @@
     </li>
 
             <li>
-        <a href="#" onclick="toggleMenu(event, 'customer-submenu')">Khách hàng</a>
+        <a href="#"  onclick="toggleMenu('customer-submenu')">Khách hàng</a>
         <ul class="submenu" id="customer-submenu" style="display: none;">
-            <li><a href="dsdatphong.php" style="background: #171A1FE8;">Khách hàng đặt phòng</a></li>
+            <li><a href="" style="">Khách hàng đặt phòng</a></li>
             <li><a href="#">Khách hàng checkin</a></li>
             <li><a href="#">Danh sách khách hàng</a></li>
         </ul>
@@ -55,3 +55,22 @@
     {{$slot}}
 </body>
 </html>
+
+<script> 
+                 function toggleMenu(menuId) {
+        // Danh sách tất cả các menu có thể có
+        const menuIds = ['room-management-submenu', 'customer-submenu'];
+
+        // Đóng tất cả các menu
+        menuIds.forEach(id => {
+            if (id !== menuId) {
+                document.getElementById(id).style.display = 'none';
+            }
+        });
+
+        // Chuyển trạng thái menu hiện tại
+        const submenu = document.getElementById(menuId);
+        submenu.style.display = submenu.style.display === 'block' ? 'none' : 'block';
+    }
+
+            </script>
