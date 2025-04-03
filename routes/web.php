@@ -23,9 +23,14 @@ Route::get('/dashboard', function () {
 
 require __DIR__.'/auth.php';
 
+use App\Http\Controllers\RoomController;
 
-Route::get('/dashboard', function () {
-    return view('dashboard');
-})->middleware(['auth'])->name('dashboard');
+Route::get('/rooms', [RoomController::class, 'index'])->name('rooms.index');
+Route::post('/rooms', [RoomController::class, 'search'])->name('rooms.search');
+Route::get('/rooms/{room_id}', [RoomController::class, 'show'])->name('rooms.show');
+
+Route::post('/rooms/xacnhan', [RoomController::class, 'xacNhan'])->name('rooms.xacnhan');
+
+
 
 
