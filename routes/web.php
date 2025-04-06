@@ -26,11 +26,14 @@ require __DIR__.'/auth.php';
 use App\Http\Controllers\RoomController;
 
 Route::get('/rooms', [RoomController::class, 'index'])->name('rooms.index');
+
 Route::post('/rooms', [RoomController::class, 'search'])->name('rooms.search');
 Route::get('/rooms/{room_id}', [RoomController::class, 'show'])->name('rooms.show');
 
 Route::post('/rooms/xacnhan', [RoomController::class, 'xacNhan'])->name('rooms.xacnhan');
+Route::get('/rooms/xacnhan', [RoomController::class, 'xacNhan'])->name('rooms.xacnhan');
 
+Route::post('/confirm-booking', [RoomController::class, 'confirmBooking'])->name('booking.confirm');
+Route::get('/confirm-booking', [RoomController::class, 'confirmBooking'])->name('booking.confirm');
 
-
-
+Route::get('/booking-success', [RoomController::class, 'success'])->name('booking.success');
