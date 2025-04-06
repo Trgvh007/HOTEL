@@ -15,13 +15,12 @@
             flex-direction: column;
         }
         .header {
-            background-color: #d32f2f;
-            color: #fff;
-            padding: 15px;
-            text-align: center;
-            border-radius: 8px 8px 0 0;
-            margin: 10px;
-        }
+        background-color: #d32f2f;
+        color: #fff;
+        padding: 15px;
+        text-align: center;
+        border-radius: 5px 5px 0 0;
+    }
         .section {
             padding: 20px;
             border-bottom: 1px solid #ddd;
@@ -79,8 +78,28 @@
             color: #fff;
         }
 
-        
+        .overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.5);
+        display: flex; /* Ensure it's visible */
+        justify-content: center;
+        align-items: center;
+        z-index: 1000;
+    }
+    .modal {
+        background-color: #fff;
+        padding: 20px;
+        border-radius: 5px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        width: 60%;
+        max-width: 800px; /* Adjust width as needed */
+    }
     </style>
+
 
 {{$slot}}
 </head>

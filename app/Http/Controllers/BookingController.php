@@ -39,8 +39,6 @@ class BookingController extends Controller
     return view("AdminLayouts.BookingList", compact('bookings'));
 }
 
-
-
   //Hiển thị form chỉnh sửa
   public function editBooking($id, $room)
   {
@@ -89,7 +87,7 @@ $roomDetails = DB::table('phong')
 if (!$roomDetails) {
     return redirect()->route('AdminLayouts.BookingList')->withErrors('Không tìm thấy thông tin phòng.');
 }
-      return view('AdminLayouts.Phieuphong', compact('booking', 'roomDetails'));
+      return view('AdminLayouts.Phieuphong', compact('booking', 'roomDetails'))->with('action', 'edit');;
   }
 
 
@@ -180,7 +178,7 @@ public function updateBooking($id, Request $request)
 
 }
 
-    /* Phương thức xử lý đặt phòng
+    // Phương thức xử lý đặt phòng
     public function insertBooking(Request $request)
     {
         // Validate dữ liệu đầu vào
@@ -210,14 +208,14 @@ public function updateBooking($id, Request $request)
         $time_checkin = $request->input('time_checkin');
         $time_checkout = $request->input('time_checkout');
         $cty_group = $request->input('company');
-        $tra_truoc = $request->input('prepay');
+        $tra_truoc = $request->input('prepaid');
         $giam_tru = $request->input('discount');
-        $ghi_chu = $request->input('note');
-        $pay = $request->input('cash');
+        $ghi_chu = $request->input('notes');
+        $pay = $request->input('payment_method');
 
         $cccd = $request->input('cccd');
-        $ho_ten = $request->input('ho_ten');
-        $ngay_sinh = $request->input('birthday');
+        $ho_ten = $request->input('name');
+        $ngay_sinh = $request->input('dob');
         $sdt = $request->input('phone');
         $dia_chi = $request->input('address');
         $email = $request->input('email');
@@ -277,17 +275,17 @@ public function updateBooking($id, Request $request)
 
             // Thêm hóa đơn
             if (Session::has('ma_nv')) {
-                $nv = Session::get('ma_nv');
+                //$nv = Session::get('ma_nv');
                 DB::table('hoa_don')->insert([
                     'FK_ID_Booking' => $booking_id,
                     'tong_tien' => $total,
                     'phuong_thuc' => $pay,
-                    'FK_Ma_NV' => $nv,
+                    //'FK_Ma_NV' => $nv,
                     'ngay_thanh_toan' => now(),
                 ]);
             } else {
-                throw new Exception("Không có thông tin nhân viên.");
-            }
+               // throw new Exception("Không có thông tin nhân viên.");
+           }
 
             DB::commit(); // Commit giao dịch
 
@@ -298,5 +296,132 @@ public function updateBooking($id, Request $request)
             return back()->with('error', 'Lỗi khi xử lý: ' . $e->getMessage());
         }
     }
-        */
+        //hiển thị form nhận phòng
+    public function createBooking($room_id)
+{
+    $roomDetails = DB::table('phong')
+        ->join('loai_phong as lp', 'phong.FK_ID_loai', '=', 'lp.ID_Loai')
+        ->where('phong.so_phong', $room_id)
+        ->select('phong.*', 'lp.ten_loai')
+        ->first();
+
+    if (!$roomDetails) {
+        return redirect()->route('booking.list')->withErrors('Không tìm thấy thông tin phòng.');
+    }
+
+    return view('AdminLayouts.Phieuphong', [
+        'roomDetails' => $roomDetails,
+        'booking' => null,
+        'action' => 'create'
+    ]);
+}
+
+//Hàm xóa
+public function delete(Request $request)
+{
+    $bookingId = $request->input('id');
+    $roomNumber = $request->input('room');
+
+    try {
+        DB::beginTransaction();
+
+        // Xóa chi tiết đặt phòng
+        DB::table('ct_dat_phong')
+            ->where('FK_ID_Booking', $bookingId)
+            ->where('FK_so_phong', $roomNumber)
+            ->delete();
+
+        // Cập nhật trạng thái phòng
+        DB::table('phong')
+            ->where('so_phong', $roomNumber)
+            ->update(['trang_thai' => 'Trống']);
+
+        // Kiểm tra nếu không còn phòng nào khác thì xóa dat_phong
+        $remaining = DB::table('ct_dat_phong')
+            ->where('FK_ID_Booking', $bookingId)
+            ->count();
+
+        if ($remaining === 0) {
+            DB::table('dat_phong')
+                ->where('ID_Booking', $bookingId)
+                ->delete();
+
+            DB::table('hoa_don')
+                ->where('FK_ID_Booking', $bookingId)
+                ->delete();
+        }
+
+        DB::commit();
+
+        return response()->json(['success' => true]);
+    } catch (\Exception $e) {
+        DB::rollBack();
+        return response()->json(['success' => false, 'error' => $e->getMessage()]);
+    }
+}
+
+
+public function showTransferForm($room)
+    {
+        $oldRoom = $room;
+        $roomTypes = DB::table('loai_phong')->get();
+
+        return view('AdminLayouts.Chuyenphong', compact('oldRoom', 'roomTypes'));
+    }
+
+    public function fetchRooms(Request $request)
+    {
+        $roomTypeId = $request->query('room_type'); // lấy loại phòng từ request
+
+        // Kiểm tra nếu room_type không tồn tại hoặc là null
+        if (!$roomTypeId) {
+            return response()->json(['error' => 'Room type is required'], 400);
+        }
+    
+        // Truy vấn bảng phong và lấy các phòng trống
+        $rooms = DB::table('phong')
+            ->where('FK_ID_loai', $roomTypeId) // Điều kiện loại phòng
+            ->where('trang_thai', 'Trống') // Điều kiện phòng trống
+            ->pluck('so_phong'); // Lấy số phòng
+    
+        // Nếu không tìm thấy phòng trống
+        if ($rooms->isEmpty()) {
+            return response()->json(['error' => 'No available rooms'], 404);
+        }
+    
+        return response()->json($rooms);
+    }
+    
+    
+
+    public function submitTransfer(Request $request)
+    {
+        $request->validate([
+            'room-number' => 'required',
+            'old-room' => 'required'
+        ]);
+
+        $oldRoom = $request->input('old-room');
+        $newRoom = $request->input('room-number');
+
+        DB::beginTransaction();
+
+        try {
+            DB::table('ct_dat_phong')
+                ->where('FK_so_phong', $oldRoom)
+                ->update(['FK_so_phong' => $newRoom]);
+
+            DB::table('phong')
+                ->where('so_phong', $newRoom)
+                ->update(['trang_thai' => 'Đặt trước', 'ngay_cap_nhat' => now()]);
+
+            DB::commit();
+
+
+            return redirect()->route('booking.list')->with('success', 'Chuyển phòng thành công!');
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return back()->withErrors(['error' => 'Lỗi chuyển phòng: ' . $e->getMessage()]);
+        }
+    }
 }

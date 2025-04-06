@@ -1,13 +1,19 @@
 <x-phieuphong>
-    <x-slot name='title'> Chỉnh sửa đặt phòng </x-slot>
-
+    <x-slot name='title'> 
+        {{ $action =='edit' ? 'Chỉnh sửa đặt phòng': 'Phiếu nhận phòng' }} </x-slot>
+        
 <div class="container">
             <div class="header">
-                <img src="./Adimage/person.png" width="30px" padding = "15px"   margin=" 10px">
+                <img src="/Adimage/person.png" width="35px" padding = "15px"   margin=" 10px">
               
-              <span style="font-size: 30px"> Chỉnh sửa đặt phòng - R{{$roomDetails->so_phong ?? ''}} <a href="#" class='edit'>✏️</a>- [{{$booking->ID_Booking ?? ''}}]</span>
+                <span style="font-size: 30px">
+                {{ $action == 'edit' ? "Chỉnh sửa đặt phòng - R{$roomDetails->so_phong}" : "Phiếu nhận phòng {$roomDetails->so_phong}" }}
+                @if($action == 'edit')
+                <a href="{{ route('chuyen-phong', ['room' => $roomDetails->so_phong]) }}" class="edit">✏️</a> - [{{ $booking->ID_Booking ?? '' }}]
+                @endif
+            </span>
 </div>
-<form action="{{ route('booking.update', ['id' => $booking->ID_Booking]) }}" method="post" enctype="multipart/form-data">
+<form action="{{ $action=='edit' ? route('booking.update', ['id' => $booking->ID_Booking]) : route('booking.insert') }}" method="post" enctype="multipart/form-data">
 
           
             @csrf
@@ -112,10 +118,14 @@
             
                 </div>
                 <div class="buttons">
-                <button type="button" class="cancel" onclick="goBack()">Cancel</button>
-                    <button type="submit" class="confirm" name="submit">✅Cập nhật</button>
-                </div>
+                @if($action == 'edit')
+                    <button type="button" class="cancel" onclick="goBack()">Cancel</button>
+                    <button type="submit" class="confirm">✅ Cập nhật</button>
+                @else
+                    <button type="reset" class="cancel" onclick="goBack()">Hủy</button>
+                    <button type="submit" class="confirm">✅ Nhận phòng</button>
+                @endif
             </form>
-      
-        </div>
+            </div>
+          
             </x-phieuphong>

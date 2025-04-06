@@ -1,9 +1,4 @@
  <!-- Kiểm tra và hiển thị thông báo thành công -->
- @if(session('status'))
-        <div class="alert alert-success">
-            {{session('status') }}
-        </div>
-    @endif
 
     <!-- Kiểm tra và hiển thị lỗi -->
     @if ($errors->any())
@@ -80,7 +75,7 @@ Danh Sách Đặt Phòng
                         @if($checkin->checkindate >= date('Y-m-d'))
                             <a href="{{route('booking.edit', ['id' => $checkin->ma_booking, 'room' => $checkin->phong]) }}" class='edit'>✏️</a>
                         @endif
-                        <a href="#" onclick="deleteBooking('{{ $checkin->ma_booking  }}', '{{  $checkin->phong}}')" class='delete'>❌</a>
+                        <a href="#" onclick="deleteBooking('{{ $checkin->ma_booking  }}', '{{  $checkin->phong}}', this)" class='delete'>❌</a>
                     </td>
                 </tr>
                 @php $stt++; @endphp
