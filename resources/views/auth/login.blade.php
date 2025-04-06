@@ -6,7 +6,7 @@
                  <img src="{{asset('image/Logo.png')}}" width='300px'>
             </a>
         </x-slot>
-
+        <center><h2><b>ĐĂNG NHẬP</b></h2></center>
         <!-- Session Status -->
         <x-auth-session-status class="mb-4" :status="session('status')" />
 
@@ -15,7 +15,8 @@
 
         <form method="POST" action="{{ route('login') }}">
             @csrf
-
+            <label><input type="radio" name="level" value="{{ \App\Models\User::ROLE_ADMIN }}" checked> Quản lý</label><br>
+            <label><input type="radio" name="level" value="{{ \App\Models\User::ROLE_USER }}"> Khách hàng</label><br>
             <!-- Email Address -->
             <div>
                 <x-label for="email" :value="__('Email')" />
