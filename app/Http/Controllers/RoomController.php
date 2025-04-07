@@ -46,6 +46,7 @@ class RoomController extends Controller
             ->get();
         return view('Customer_Layouts.chitietphong', compact('room', 'amenities'));
     }
+    
     public function xacNhan(Request $request)
 {
     // 1. Validate cơ bản
@@ -159,4 +160,5 @@ class RoomController extends Controller
     {
         return view('Customer_Layouts.thanhcong');
     }
+
 }

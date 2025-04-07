@@ -28,7 +28,6 @@ use App\Http\Controllers\RoomController;
 Route::get('/rooms', [RoomController::class, 'index'])->name('rooms.index');
 
 Route::post('/rooms', [RoomController::class, 'search'])->name('rooms.search');
-Route::get('/rooms/{room_id}', [RoomController::class, 'show'])->name('rooms.show');
 
 Route::post('/rooms/xacnhan', [RoomController::class, 'xacNhan'])->name('rooms.xacnhan');
 Route::get('/rooms/xacnhan', [RoomController::class, 'xacNhan'])->name('rooms.xacnhan');
@@ -37,3 +36,6 @@ Route::post('/confirm-booking', [RoomController::class, 'confirmBooking'])->name
 Route::get('/confirm-booking', [RoomController::class, 'confirmBooking'])->name('booking.confirm');
 
 Route::get('/booking-success', [RoomController::class, 'success'])->name('booking.success');
+//chi tiết phòng mới
+// web.php
+Route::get('/rooms/show/{room_id}', [RoomController::class, 'show'])->name('rooms.show');

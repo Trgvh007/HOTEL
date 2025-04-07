@@ -4,6 +4,111 @@
 
 @section('content')
 <style>
+    
+    #overlay-room-detail {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(0, 0, 0, 0.4); /* lớp nền mờ */
+    display: none;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+    padding: 20px;
+    box-sizing: border-box;
+    padding-left: 80px;
+}
+
+#room-detail-html {
+    background:#FFFFF0;
+    border-radius: 10px;
+    padding: 20px;
+    width: 90%;
+    max-width: 1200px;
+    height: auto;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.2);
+    overflow: visible;
+    max-height: 90vh;
+    position: relative;
+    transform: translateX(8%);
+    align-items: stretch; 
+}
+
+.image-container {
+    flex: 6; /* 50% */
+    padding: 10px;
+    max-height: 100%;
+    overflow: hidden;
+}
+
+.image-container img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 8px;
+    display: block;
+}
+
+.info-container {
+    flex: 4; /* 50% */
+    padding: 20px;
+    overflow: hidden;
+}
+
+#overlay-room-detail .back-button {
+    position: absolute;
+    top: 30px;
+    right: 30px;
+    font-size: 22px;
+    color: black;
+    background-color: #f0e68c;
+    border: none;
+    cursor: pointer;
+    padding: 10px;
+    border-radius: 50%;
+    z-index: 10000;
+    transition: transform 0.2s ease;
+}
+
+#overlay-room-detail .back-button:hover {
+    background-color: #ffe26f;
+    transform: scale(1.1);
+}
+
+.details, .amenities {
+    margin-top: 20px;
+    font-size: 0.9rem;
+}
+
+.details h3, .amenities h3 {
+    margin: 10px 0;
+    font-weight: bold;
+}
+
+.details ul, .amenities ul {
+    list-style-type: none;
+    padding: 0;
+}
+
+.details ul li, .amenities ul li {
+    margin: 5px 0;
+    position: relative;
+    padding-left: 20px;
+}
+
+.details ul li:before, .amenities ul li:before {
+    content: "✓";
+    position: absolute;
+    left: 0;
+    color: #28a745;
+}
+
+
    .search-container {
     display: flex;
     align-items: center;
@@ -87,7 +192,6 @@ th, td {
                     <p>🌇 View: {{ $room->view }}</p>
                     <p>🛏️ Giường: {{ $room->loai_giuong }}</p>
                     <a href="{{ route('rooms.show', ['room_id' => $room->so_phong]) }}" class="detail-room-link">Xem chi tiết phòng</a>
-
                     <div>
                         <p>✅ Hủy MIỄN PHÍ trước ngày 10 kể từ ngày đặt phòng</p>
                         <p>✅ Miễn phí các tiện ích: Hồ bơi, Phòng gym và spa,... trong suốt thời gian lưu trú</p>
@@ -313,4 +417,48 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 });
 </script>
+
+
+<!-- Overlay chi tiết phòng -->
+<div id="overlay-room-detail">
+    <div id="room-detail-html">
+        <!-- Nút đóng nằm bên trong khối chi tiết -->
+        <button class="back-button">✖</button>
+        <!-- Nội dung phòng sẽ được load vào đây -->
+    </div>
+</div>
+
+<!-- Script xử lý AJAX & overlay -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    $(document).ready(function() {
+        $('.detail-room-link').on('click', function(e) {
+            e.preventDefault();
+            const url = $(this).attr('href');
+
+            $.get(url, function(data) {
+                $('#room-detail-html').append(data); 
+                $('#overlay-room-detail').fadeIn();
+            });
+        });
+
+        // Đóng overlay khi nhấn X
+        $(document).on('click', '.back-button', function() {
+            $('#overlay-room-detail').fadeOut(function() {
+                $('#room-detail-html').html('<button class="back-button">✖</button>'); // reset nội dung + giữ lại nút
+            });
+        });
+
+        // Đóng overlay khi nhấn ra ngoài (tuỳ chọn)
+        $('#overlay-room-detail').on('click', function(e) {
+            if (e.target.id === 'overlay-room-detail') {
+                $('#overlay-room-detail').fadeOut(function() {
+                    $('#room-detail-html').html('<button class="back-button">✖</button>');
+                });
+            }
+        });
+    });
+</script>
+
+
 @endsection
