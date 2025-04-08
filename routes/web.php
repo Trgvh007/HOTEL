@@ -13,12 +13,23 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/', function () {
+/*Route::get('/', function () {
     return view('welcome');
-});
+});*/
 
 Route::get('/dashboard', function () {
     return view('dashboard');
 })->middleware(['auth'])->name('dashboard');
 
 require __DIR__.'/auth.php';
+Route::get('/trangchu', 'App\Http\Controllers\TrangchuController@trangchu');
+
+
+/*Route::get('dang-nhap', 'LoginController@getLogin')->name('get.login');
+Route::group(['namespace'=>'Auth'], function(){
+    Route::get('dang-ky','RegisteredUserController@getRegister')->name('get.register');
+    Route::post('dang-ky','RegisteredUserController@postRegister')->name('post.register');
+
+    Route::get('dang-nhap','LoginController@getLogin')->name('get.login');
+    Route::post('dang-nhap','LoginController@postLogin')->name('post.login');
+});*/
