@@ -16,6 +16,9 @@ use App\Http\Controllers\BookingController;
 |
 */
 
+
+Route::get('register', [RegisteredUserController::class, 'create'])->name('register');
+Route::get('login', [LoginController::class, 'getLogin'])->name('login');
 // Public routes
 Route::get('/', [HomeController::class, 'index'])->name('home');
 Route::get('/search', [HomeController::class, 'search'])->name('search');
@@ -34,24 +37,15 @@ Route::prefix('booking')->group(function () {
     Route::get('/done', [BookingController::class, 'done'])->name('booking.done');
 });
 
-// Authentication Routes
-Route::get('/login', [App\Http\Controllers\Auth\LoginController::class, 'showLoginForm'])->name('login');
-Route::post('/login', [App\Http\Controllers\Auth\LoginController::class, 'login']);
-Route::post('/logout', [App\Http\Controllers\Auth\LoginController::class, 'logout'])->name('logout');
-Route::get('/register', [App\Http\Controllers\Auth\RegisterController::class, 'showRegistrationForm'])->name('register');
-Route::post('/register', [App\Http\Controllers\Auth\RegisterController::class, 'register']);
-
-
-
-<<<<<<< HEAD
 require __DIR__.'/auth.php';
+
 
 
 Route::get('/BookingList','App\Http\Controllers\BookingController@getBookings')->name('booking.list');
 Route::post('booking/update/{id}', 'App\Http\Controllers\BookingController@updateBooking')->name('booking.update');
 Route::get('/booking/edit/{id}/{room}', 'App\Http\Controllers\BookingController@editBooking')->name('booking.edit');
 Route::post('/booking/insert', 'App\Http\Controllers\BookingController@insertBooking')->name('booking.insert');
-Route::get('/quanly', 'App\Http\Controllers\RoomController@index');
+Route::get('/quanly', 'App\Http\Controllers\RoomController@index')->name('admin.quanly')->middleware("admin");
 
 Route::get('/phieunhanphong/{id}', 'App\Http\Controllers\BookingController@createBooking')->name('booking.create');
 Route::post('/deletebooking', 'App\Http\Controllers\BookingController@delete')->name('booking.delete');
@@ -66,5 +60,3 @@ Route::get('/ajax/fetch-rooms', 'App\Http\Controllers\BookingController@fetchRoo
 
 // Xử lý chuyển phòng (POST)
 Route::post('/chuyen-phong', 'App\Http\Controllers\BookingController@submitTransfer')->name('chuyen-phong.submit');
-=======
->>>>>>> Cus_Hompage_RoomDetail

@@ -4,10 +4,11 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-<<<<<<< HEAD
+
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Redirect;
+use Illuminate\Support\Facades\Log;
 use Carbon\Carbon;
 
 class BookingController extends Controller
@@ -425,12 +426,9 @@ public function showTransferForm($room)
             return back()->withErrors(['error' => 'Lỗi chuyển phòng: ' . $e->getMessage()]);
         }
     }
-}
-=======
-use Illuminate\Support\Facades\Log;
 
-class BookingController extends Controller
-{
+
+
     public function confirm(Request $request)
     {
         // Get booking data from session
@@ -550,5 +548,5 @@ class BookingController extends Controller
             return back()->with('error', 'Có lỗi xảy ra khi đặt phòng. Vui lòng thử lại.');
         }
     }
-} 
->>>>>>> Cus_Hompage_RoomDetail
+}
+

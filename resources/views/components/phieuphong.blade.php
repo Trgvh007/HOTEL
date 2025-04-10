@@ -104,5 +104,12 @@
 {{$slot}}
 </head>
 <body>
+<script> 
+    function goBack() {
+    // Redirect to the desired page
+    window.location.href = "{{ route('booking.list') }}"; // Replace with your actual page
+}
+</script>
+
  
            

@@ -11,6 +11,12 @@
             </ul>
         </div>
     @endif
+
+    @if (session('status'))
+    <script>
+        alert("{{ session('status') }}");
+    </script>
+@endif
 <x-Admin_Layout>
 <x-slot name='title'>
 Danh Sách Đặt Phòng

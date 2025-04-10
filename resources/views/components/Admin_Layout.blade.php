@@ -246,6 +246,69 @@ function deleteBooking(bookingId, roomNumber, element) {
 }
 
 
+function toggleCheckboxes(source) {
+        const checkboxes = document.querySelectorAll('input[name="room_check[]"]');
+        checkboxes.forEach(checkbox => {
+            checkbox.checked = source.checked;
+        });
+    }
+
+        // Lọc theo tên theo ngày, theo mã
+        document.getElementById('filter-btn').addEventListener('click', function () {
+        const fromDate = document.getElementById('from-date').value;
+        const toDate = document.getElementById('to-date').value;
+        const searchText = document.getElementById('search').value.toLowerCase();
+
+        // Lấy tất cả các hàng dữ liệu
+        const rows = Array.from(document.querySelectorAll('#booking-table tr')).filter(row => !row.hasAttribute('data-date-row'));
+        const dateRows = document.querySelectorAll('#booking-table tr[data-date-row]');
+        let hasVisibleRows = false;
+
+        rows.forEach(row => {
+            const checkinDate = row.cells[4]?.textContent.trim() || '';
+            const customerName = row.cells[3]?.textContent.toLowerCase().trim() || '';
+            const bookingCode = row.cells[2]?.textContent.toLowerCase().trim() || '';
+
+            let showRow = true;
+
+            // Kiểm tra ngày
+            const checkinDateObject = new Date(checkinDate);
+            const fromDateObject = new Date(fromDate);
+            const toDateObject = new Date(toDate);
+
+            if (fromDate && checkinDateObject < fromDateObject) showRow = false;
+            if (toDate && checkinDateObject > toDateObject) showRow = false;
+
+            // Kiểm tra tìm kiếm
+            if (searchText && !(customerName.includes(searchText) || bookingCode.includes(searchText))) {
+                showRow = false;
+            }
+
+            row.style.display = showRow ? '' : 'none';
+
+            if (showRow) {
+                hasVisibleRows = true;
+            }
+        });
+
+        // Hiển thị/ẩn các hàng ngày
+        dateRows.forEach(dateRow => {
+            const dateRowDate = dateRow.dataset.dateRow;
+            const relatedRows = rows.filter(row => row.cells[4]?.textContent.trim() === dateRowDate && row.style.display !== 'none');
+
+            dateRow.style.display = relatedRows.length > 0 ? '' : 'none';
+        });
+
+        if (!hasVisibleRows) {
+            alert('Không tìm thấy kết quả phù hợp.');
+        }
+    });
+    
+
+    function resetTable() {
+              location.reload();
+            }
+
 
 
 
