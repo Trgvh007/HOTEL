@@ -23,6 +23,12 @@
             margin-right: 20px;
         }
 
+        .top-header .nav-links {
+            margin-left: auto;
+            display: flex;
+            align-items: center;
+        }
+
         .top-header .nav-links a {
             color: white;
             margin-left: 15px;
@@ -47,38 +53,50 @@
             color: #333;
             text-decoration: none;
         }
+
+        .top-header .social-icons a {
+            color: white;
+            margin-left: 10px;
+            text-decoration: none;
+            opacity: 0.8;
+            transition: opacity 0.3s ease;
+        }
+
+        .top-header .social-icons a:hover {
+            opacity: 1;
+        }
+
+        .social-icons .fab {
+            font-size: 16px;
+        }
     </style>
 </head>
 <body>
     <!-- Top Header -->
     <div class="top-header">
         <div class="container">
-            <div class="d-flex justify-content-between align-items-center">
-                <div class="d-flex align-items-center">
-                    <div class="phone mr-3">
-                        1900 1408
-                    </div>
-                    <div class="social-icons">
-                        <a href="https://www.facebook.com/" target="_blank"><i class="fab fa-facebook-f"></i></a>
-                        <a href="https://www.instagram.com/" target="_blank"><i class="fab fa-instagram"></i></a>
-                        <a href="https://www.youtube.com/" target="_blank"><i class="fab fa-youtube"></i></a>
-                    </div>
+            <div class="d-flex align-items-center">
+                <div class="phone mr-3">
+                    1900 1408
                 </div>
-                <div>
-                    <nav class="nav-links">
-                        <a href="{{ route('home') }}" class="text-white mr-3">Trang chủ</a>
-                        <a href="{{ route('home') }}#about-section" class="text-white mr-3">Giới thiệu</a>
-                        <a href="{{ route('home') }}#promotions-section" class="text-white mr-3">Ưu đãi</a>
-                        @guest
-                            <a href="{{ route('login') }}" class="btn btn-login ml-2">Đăng nhập</a>
-                        @else
-                            <form action="{{ route('logout') }}" method="POST" class="d-inline">
-                                @csrf
-                                <button type="submit" class="btn btn-login ml-2">Đăng xuất</button>
-                            </form>
-                        @endguest
-                    </nav>
+                <div class="social-icons">
+                    <a href="https://www.facebook.com/" target="_blank" class="text-white"><i class="fab fa-facebook-f"></i></a>
+                    <a href="https://www.instagram.com/" target="_blank" class="text-white"><i class="fab fa-instagram"></i></a>
+                    <a href="https://www.youtube.com/" target="_blank" class="text-white"><i class="fab fa-youtube"></i></a>
                 </div>
+                <nav class="nav-links">
+                    <a href="{{ route('home') }}" class="text-white mr-3">Trang chủ</a>
+                    <a href="{{ route('home') }}#about-section" class="text-white mr-3">Giới thiệu</a>
+                    <a href="{{ route('home') }}#promotions-section" class="text-white mr-3">Ưu đãi</a>
+                    @guest
+                        <a href="{{ route('login') }}" class="btn btn-login ml-2">Đăng nhập</a>
+                    @else
+                        <form action="{{ route('logout') }}" method="POST" class="d-inline">
+                            @csrf
+                            <button type="submit" class="btn btn-login ml-2">Đăng xuất</button>
+                        </form>
+                    @endguest
+                </nav>
             </div>
         </div>
     </div>
@@ -99,7 +117,7 @@
                     </ul>
                 </div>
                 <div class="col-md-4 text-center">
-                    <img src="{{ asset('images/logo1.png') }}" alt="VNL Hotel" class="img-fluid" style="max-width: 200px;">
+                    <img src="{{ asset('Cusimage/logo1.png') }}" alt="VNL Hotel" class="img-fluid" style="max-width: 200px;">
                     <div class="social-icons mt-3">
                         <a href="#" class="text-white mx-2"><i class="fab fa-facebook-f"></i></a>
                         <a href="#" class="text-white mx-2"><i class="fab fa-instagram"></i></a>
