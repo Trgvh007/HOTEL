@@ -1,6 +1,9 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\HomeController;
+use App\Http\Controllers\RoomController;
+use App\Http\Controllers\BookingController;
 
 /*
 |--------------------------------------------------------------------------
@@ -13,14 +16,34 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/', function () {
-    return view('welcome');
+// Public routes
+Route::get('/', [HomeController::class, 'index'])->name('home');
+Route::get('/search', [HomeController::class, 'search'])->name('search');
+
+// Room routes
+Route::prefix('rooms')->group(function () {
+    Route::get('/', [RoomController::class, 'index'])->name('rooms.index');
+    Route::get('/search', [RoomController::class, 'search'])->name('rooms.search');
+    Route::get('/{room}', [RoomController::class, 'show'])->name('rooms.show');
 });
 
-Route::get('/dashboard', function () {
-    return view('dashboard');
-})->middleware(['auth'])->name('dashboard');
+// Booking routes
+Route::prefix('booking')->group(function () {
+    Route::get('/confirm', [BookingController::class, 'confirm'])->name('booking.confirm');
+    Route::post('/store', [BookingController::class, 'store'])->name('booking.store');
+    Route::get('/done', [BookingController::class, 'done'])->name('booking.done');
+});
 
+// Authentication Routes
+Route::get('/login', [App\Http\Controllers\Auth\LoginController::class, 'showLoginForm'])->name('login');
+Route::post('/login', [App\Http\Controllers\Auth\LoginController::class, 'login']);
+Route::post('/logout', [App\Http\Controllers\Auth\LoginController::class, 'logout'])->name('logout');
+Route::get('/register', [App\Http\Controllers\Auth\RegisterController::class, 'showRegistrationForm'])->name('register');
+Route::post('/register', [App\Http\Controllers\Auth\RegisterController::class, 'register']);
+
+
+
+<<<<<<< HEAD
 require __DIR__.'/auth.php';
 
 
@@ -43,3 +66,5 @@ Route::get('/ajax/fetch-rooms', 'App\Http\Controllers\BookingController@fetchRoo
 
 // Xử lý chuyển phòng (POST)
 Route::post('/chuyen-phong', 'App\Http\Controllers\BookingController@submitTransfer')->name('chuyen-phong.submit');
+=======
+>>>>>>> Cus_Hompage_RoomDetail
