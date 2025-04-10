@@ -23,6 +23,7 @@ Route::get('/dashboard', function () {
 
 require __DIR__.'/auth.php';
 
+<<<<<<< HEAD
 
 Route::get('/BookingList','App\Http\Controllers\BookingController@getBookings')->name('booking.list');
 Route::post('booking/update/{id}', 'App\Http\Controllers\BookingController@updateBooking')->name('booking.update');
@@ -43,3 +44,27 @@ Route::get('/ajax/fetch-rooms', 'App\Http\Controllers\BookingController@fetchRoo
 
 // Xử lý chuyển phòng (POST)
 Route::post('/chuyen-phong', 'App\Http\Controllers\BookingController@submitTransfer')->name('chuyen-phong.submit');
+=======
+use App\Http\Controllers\RoomController;
+
+Route::get('/rooms', [RoomController::class, 'index'])->name('rooms.index');
+
+Route::post('/rooms', [RoomController::class, 'search'])->name('rooms.search');
+
+Route::post('/rooms/xacnhan', [RoomController::class, 'xacNhan'])->name('rooms.xacnhan');
+Route::get('/rooms/xacnhan', [RoomController::class, 'xacNhan'])->name('rooms.xacnhan');
+
+Route::post('/confirm-booking', [RoomController::class, 'confirmBooking'])->name('booking.confirm');
+Route::get('/confirm-booking', [RoomController::class, 'confirmBooking'])->name('booking.confirm');
+Route::get('/booking-success', [RoomController::class, 'success'])->name('thanhcong');
+
+//chi tiết phòng mới
+// web.php
+Route::get('/rooms/show/{room_id}', [RoomController::class, 'show'])->name('rooms.show');
+//chaythu
+Route::get('/dienform', [RoomController::class, 'chaythu'])->name('chaythu');
+Route::post('/themdulieu', 'App\Http\Controllers\RoomController@chaythu')->name("them");
+
+// Xử lý lưu sách
+Route::post('/batdauluu', 'App\Http\Controllers\RoomController@luudulieu')->name("luu");
+>>>>>>> Cus_Booking_RoomDetail_Filter(Ad)
