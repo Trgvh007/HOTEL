@@ -34,8 +34,14 @@ Route::get('/rooms/xacnhan', [RoomController::class, 'xacNhan'])->name('rooms.xa
 
 Route::post('/confirm-booking', [RoomController::class, 'confirmBooking'])->name('booking.confirm');
 Route::get('/confirm-booking', [RoomController::class, 'confirmBooking'])->name('booking.confirm');
+Route::get('/booking-success', [RoomController::class, 'success'])->name('thanhcong');
 
-Route::get('/booking-success', [RoomController::class, 'success'])->name('booking.success');
 //chi tiết phòng mới
 // web.php
 Route::get('/rooms/show/{room_id}', [RoomController::class, 'show'])->name('rooms.show');
+//chaythu
+Route::get('/dienform', [RoomController::class, 'chaythu'])->name('chaythu');
+Route::post('/themdulieu', 'App\Http\Controllers\RoomController@chaythu')->name("them");
+
+// Xử lý lưu sách
+Route::post('/batdauluu', 'App\Http\Controllers\RoomController@luudulieu')->name("luu");

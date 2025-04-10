@@ -47,118 +47,118 @@ class RoomController extends Controller
         return view('Customer_Layouts.chitietphong', compact('room', 'amenities'));
     }
     
-    public function xacNhan(Request $request)
+   
+   
+    public function chaythu(Request $request)
 {
-    // 1. Validate cơ bản
-    $validated = $request->validate([
-        'checkin' => 'required|date',
-        'checkout' => 'required|date|after:checkin',
-        'booking_time' => 'required|string',
-        'total_price' => 'required|string',
-        'rooms' => 'required|array|min:1',
-        'rooms.*.room_name' => 'required|string',
-        'rooms.*.room_number' => 'required|string',
-        'rooms.*.price' => 'required|string',
-    ]);
+    // Lấy dữ liệu gửi từ form JS
+    $checkin = $request->input('checkin');
+    $checkout = $request->input('checkout');
+    $bookingTime = $request->input('booking_time');
+    $totalPrice = $request->input('total_price');
+    $rooms = $request->input('rooms', []);
 
-    // 2. Gửi dữ liệu sang view
-    return view('Customer_Layouts.xacnhan', [
-        'bookingData' => $validated
-    ]);
+    // Gửi dữ liệu sang view
+    return view('Customer_Layouts.chaythu', compact(
+        'checkin',
+        'checkout',
+        'bookingTime',
+        'totalPrice',
+        'rooms'
+    ));
 }
 
-    public function confirmBooking(Request $request)
-    {
-        // Xác nhận thông tin đầu vào từ form
-        $request->validate([
-            'name' => 'required|string',
-            'phone' => 'required|string',
-            'cccd' => 'required|string',
-            'email' => 'required|email',
-            'payment_method' => 'required|string',
-            'rooms' => 'required|array',
+
+public function luudulieu(Request $request)
+{
+    // Lấy phương thức thanh toán (ví dụ: 'qr_code' hoặc 'tien_mat')
+    $paymentMethod = $request->input('payment_method');
+
+    // 1. VALIDATE
+    $request->validate([
+        'ho_ten' => 'required',
+        'email' => 'required|email',
+        'sdt' => 'required',
+        'cccd' => 'required',
+    ], [
+        'ho_ten.required' => 'Vui lòng nhập họ tên khách hàng.',
+        'email.required' => 'Vui lòng nhập email.',
+        'email.email' => 'Email không đúng định dạng.',
+        'sdt.required' => 'Vui lòng nhập số điện thoại.',
+        'cccd.required' => 'Vui lòng nhập số CCCD.',
+    ]);
+
+    // 2. Lấy danh sách phòng và các thông tin chung (ví dụ checkin, checkout)
+    $rooms   = $request->input('rooms', []);
+    $checkin = $request->input('checkin');
+    $checkout = $request->input('checkout');
+
+    // 3. Tính tổng tiền (ví dụ cộng tất cả đơn giá của các phòng, cần đảm bảo giá được xử lý dạng số)
+    $tong_tien = 0;
+    foreach ($rooms as $room) {
+        // Loại bỏ định dạng tiền, ví dụ: "2,199,100 VNĐ"
+        $priceClean = str_replace([' VNĐ', 'đ', ','], '', $room['price']);
+        $tong_tien += floatval($priceClean);
+    }
+
+    // 4. Transaction: lưu tất cả thông tin vào DB
+    DB::transaction(function () use ($request, $rooms, $paymentMethod, $checkin, $checkout, $tong_tien) {
+        // 4.1 Lưu khách hàng
+        $id_khach_hang = DB::table('khach_hang')->insertGetId([
+            'ho_ten' => $request->ho_ten,
+            'email'  => $request->email,
+            'sdt'    => $request->sdt,
+            'cccd'   => $request->cccd,
         ]);
 
-        // Lấy dữ liệu từ form
-        $ho_ten = $request->input('name');
-        $email = $request->input('email');
-        $phone = $request->input('phone');
-        $cccd = $request->input('cccd');
-        $ghi_chu = $request->input('note');
-        $checkin = $request->input('checkin');
-        $checkout = $request->input('checkout');
-        $rooms = $request->input('rooms');
-        $payment_method = $request->input('payment_method');
+        // 4.2 Lưu đặt phòng (booking)
+        $id_dat_phong = DB::table('dat_phong')->insertGetId([
+            'ghi_chu'                => $request->ghi_chu,
+            'FK_ma_KH'               => $id_khach_hang,
+            'ngay_dat'               => Carbon::now('Asia/Ho_Chi_Minh'),
+        ]);
 
-        // Tính tổng tiền
-        $tong_tien = 0;
+        // 4.3 Lưu chi tiết đặt phòng và cập nhật trạng thái phòng
         foreach ($rooms as $room) {
-            $tong_tien += $room['total'];
+            // Cập nhật trạng thái phòng thành "Đặt trước"
+            DB::table('phong')
+                ->where('so_phong', $room['room_number'])
+                ->update(['trang_thai' => 'Đặt trước']);
+
+            // Xử lý giá phòng (loại bỏ định dạng định dạng tiền)
+            $priceClean = str_replace([' VNĐ', 'đ', ','], '', $room['price']);
+            $gia_so = floatval($priceClean);
+
+            // Lưu chi tiết đặt phòng
+            DB::table('ct_dat_phong')->insert([
+                'FK_ID_Booking' => $id_dat_phong, // Liên kết với booking vừa chèn
+                'FK_so_phong'   => $room['room_number'],
+                'checkindate'   => $checkin,
+                'checkoutdate'  => $checkout,
+                'don_gia'       => $gia_so,
+            ]);
         }
 
-        // Tính số đêm
-        $so_dem = (strtotime($checkout) - strtotime($checkin)) / 86400;
+        // 4.4 Xác định ngày thanh toán dựa vào phương thức thanh toán
+        // Nếu là quét mã QR: lấy thời gian hiện tại, nếu là thanh toán khi nhận phòng: để 0000-00-00
+        $ngay_thanh_toan = ($paymentMethod === 'Quét mã QR') 
+                            ? Carbon::now('Asia/Ho_Chi_Minh') 
+                            : null;
 
-        // Bắt đầu giao dịch
-        DB::beginTransaction();
-        try {
-            // Lưu thông tin khách hàng
-            $id_khach_hang = DB::table('khach_hang')->insertGetId([
-                'ho_ten' => $ho_ten,
-                'email' => $email,
-                'sdt' => $phone,
-                'cccd' => $cccd,
-            ]);
+        // 4.5 Lưu thông tin hóa đơn
+        DB::table('hoa_don')->insert([
+            'tong_tien'       => $tong_tien,
+            'phuong_thuc'     => $paymentMethod,
+            'FK_ID_Booking'   => $id_dat_phong, // Liên kết với booking đã lưu ở trên
+            'ngay_thanh_toan' => $ngay_thanh_toan,
+        ]);
+    });
 
-            // Lưu thông tin đặt phòng
-            $id_booking = DB::table('dat_phong')->insertGetId([
-                'ghi_chu' => $ghi_chu,
-                'FK_ma_KH' => $id_khach_hang,
-                'ngay_dat' => Carbon::now(),
-            ]);
+    return redirect()->route('thanhcong')->with('success', 'Đã lưu thông tin khách hàng, đặt phòng và hóa đơn thành công!');
+}
 
-            // Cập nhật trạng thái phòng
-            foreach ($rooms as $room) {
-                DB::table('phong')
-                    ->where('so_phong', $room['roomNumber'])
-                    ->update(['trang_thai' => 'Đặt trước']);
-            }
-
-            // Lưu thông tin chi tiết phòng
-            foreach ($rooms as $room) {
-                DB::table('ct_dat_phong')->insert([
-                    'FK_ID_Booking' => $id_booking,
-                    'FK_so_phong' => $room['roomNumber'],
-                    'checkindate' => $checkin,
-                    'checkoutdate' => $checkout,
-                    'don_gia' => $room['price'],
-                ]);
-            }
-
-            // Thêm thông tin hóa đơn
-            $ngay_thanh_toan = ($payment_method === "Quét mã QR") ? Carbon::now() : null;
-
-            DB::table('hoa_don')->insert([
-                'tong_tien' => $tong_tien,
-                'phuong_thuc' => $payment_method,
-                'FK_ID_Booking' => $id_booking,
-                'ngay_thanh_toan' => $ngay_thanh_toan,
-            ]);
-
-            // Commit giao dịch
-            DB::commit();
-
-            // Redirect hoặc trả về thông báo thành công
-            return redirect()->route('booking.success')->with('message', 'Đặt phòng thành công!');
-        } catch (\Exception $e) {
-            // Rollback giao dịch nếu có lỗi
-            DB::rollBack();
-            return back()->withErrors(['error' => 'Đã có lỗi xảy ra, vui lòng thử lại!']);
-        }
-    }
-    public function success()
-    {
-        return view('Customer_Layouts.thanhcong');
-    }
-
+public function success()
+{
+    return view('Customer_Layouts.thanhcong');
+}
 }

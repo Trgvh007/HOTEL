@@ -66,7 +66,6 @@
     right: 30px;
     font-size: 22px;
     color: black;
-    background-color: #f0e68c;
     border: none;
     cursor: pointer;
     padding: 10px;
@@ -374,7 +373,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
         let form = document.createElement("form");
         form.method = "POST";
-        form.action = {!! json_encode(route('rooms.xacnhan')) !!};
+        form.action = "{{ route('them') }}";
 
         let csrf = document.createElement("input");
         csrf.type = "hidden";
@@ -418,13 +417,9 @@ document.addEventListener("DOMContentLoaded", function () {
 });
 </script>
 
-
-<!-- Overlay chi tiết phòng -->
 <div id="overlay-room-detail">
     <div id="room-detail-html">
-        <!-- Nút đóng nằm bên trong khối chi tiết -->
         <button class="back-button">✖</button>
-        <!-- Nội dung phòng sẽ được load vào đây -->
     </div>
 </div>
 
@@ -459,6 +454,4 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     });
 </script>
-
-
 @endsection

@@ -27,7 +27,7 @@
 		@yield('content')
 	</main>
 	<footer style="width: 100%; background-color: #f8f9fa;">    
-            <img src="/Cusimage/footer.png" style="max-width: 100%; ">
+            <img src=" {{ asset('Cusimage/footer.png') }}" style="max-width: 100%; ">
 </footer>
 </body>
 </html>
