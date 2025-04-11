@@ -1,0 +1,218 @@
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+}
+
+.sidebar {
+    width: 250px;
+    height: 100vh;
+    background-color: #bf0a30;
+    color: white;
+    position: fixed;
+    top: 0;
+    left: 0;
+}
+
+.sidebar-header {
+    text-align: center;
+    padding: 20px 10px;
+    background-color: #a10e26;
+    border-bottom: 1px solid #fff;
+}
+
+.sidebar-header h1 {
+    font-size: 18px;
+    margin: 0;
+    font-weight: bold;
+}
+.header {
+    background-color: #bf0a30;
+    color: #fff;
+    padding: 10px;
+    height: 60px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+}
+
+.header a {
+    color: #fff;
+    text-decoration: none;
+    margin: 0 10px;
+}
+
+.content {
+    margin-left: 20%;
+    padding: 20px;
+   
+}
+
+.content h2 {
+    background-color: #d32f2f;
+    color: #fff;
+    padding: 10px;
+    border-radius: 5px;
+}
+.filter-section{
+    margin: 20px;
+}
+.filter-section input[type="text"] {
+    width: 200px;
+}
+
+.filter-section input[type="text"]:focus {
+    border-color: #d32f2f;
+    box-shadow: 0 0 5px rgba(211, 47, 47, 0.5);
+    color: red;
+}
+.table-container {
+    margin-top: 5px;
+}
+
+
+.table-container td a.delete {
+    text-decoration: none ; 
+}
+
+    
+.table-container td a.edit {
+    text-decoration: none; 
+
+}
+
+
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    background-color: #fff;
+}
+
+table th, table td {
+    border: 1px solid #ccc;
+    padding: 8px;
+    text-align: center;
+}
+
+table th {
+    background-color: #f4f4f4;
+}
+
+.btn {
+    padding: 8px 15px;
+    background-color: #2196F3;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    text-align: center;
+}
+
+.btn:hover {
+    background-color: #1976D2;
+}
+
+.btn-reset {
+    background-color: #6c757d;
+}
+
+.btn-reset:hover {
+    background-color: #5a6268;
+}
+.user-info {
+    text-align: center;
+    margin-top: 15px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid #fff;
+}
+
+.user-info img {
+    width: 70px;
+    height: 70px;
+    border-radius: 50%;
+    margin-bottom: 10px;
+    border: 2px solid white;
+}
+
+.user-info h3 {
+    margin: 5px 0;
+    font-size: 16px;
+}
+
+.user-info span {
+    font-size: 14px;
+    font-style: italic;
+}
+
+.menu {
+    padding: 0;
+    margin: 0;
+    list-style: none;
+}
+
+.menu li {
+    position: relative;
+}
+
+.menu li a {
+    text-decoration: none;
+    color: white;
+    display: block;
+    padding: 12px 20px;
+    font-size: 14px;
+    border-bottom: 1px solid #fff;
+}
+
+.menu li a:hover {
+    background-color: #a10e26;
+}
+
+.menu li a .arrow {
+    float: right;
+}
+
+.submenu {
+    display: none;
+    list-style: none;
+    padding-left: 20px;
+    background-color: #8b0d22;
+}
+
+.submenu li a {
+    padding: 10px 20px;
+    font-size: 13px;
+    border-bottom: none;
+}
+
+.submenu li a:hover {
+    background-color: #750a1c;
+}
+
+.menu li.active .submenu {
+    display: block;
+}
+.buttons .cancel {
+    background: #4C31E3;
+    color: #fff;
+    margin-right: 10px;
+}
+.buttons .confirm {
+    background: #D3D2C4D4;
+    ;
+    color: #585050;
+}
+.button-container {
+display: flex;
+justify-content: flex-end;
+margin-top: 10px;
+}
+
+.button-container button {
+padding: 10px 15px;
+margin-left: 10px;
+font-size: 14px;
+border: none;
+border-radius: 5px;
+cursor: pointer;
+}
