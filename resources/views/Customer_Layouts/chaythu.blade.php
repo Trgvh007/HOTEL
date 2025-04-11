@@ -3,8 +3,6 @@
 @section('content')
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
-
-
 <style>
 
    /* Căn giữa và tăng kích thước tiêu đề */
@@ -85,17 +83,7 @@ h4 {
         padding-left: 20px;
     }
 
-    #qr-container img {
-        border: 1px solid #ccc;
-        border-radius: 10px;
-    }
-    #qr-container {
-    margin-top: 10px;
-    display: none;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-}
+    
 
     .btn-primary {
     background-color: #f1c40f !important;
@@ -132,7 +120,7 @@ h4 {
 
             <div style="margin-bottom: 15px;">
                 <label>Họ và tên:</label>
-                <input type="text" name="ho_ten" required class="form-control">
+                <input type="text" name="ho_ten" value="{{ old('ho_ten', optional($user)->name) }}" class="form-control" required>
             </div>
 
             <div style="margin-bottom: 15px;">
@@ -147,7 +135,7 @@ h4 {
 
             <div style="margin-bottom: 15px;">
                 <label>Email:</label>
-                <input type="text" name="email" class="form-control">
+                <input type="text" name="email" value="{{ old('email', optional($user)->email) }}" class="form-control">
             </div>
 
             <div style="margin-bottom: 15px;">
@@ -163,10 +151,14 @@ h4 {
 
                 <label><input type="radio" name="payment_method" value="qr_code" onchange="toggleQRCode()"> Quét mã QR</label>
 
-                <div id="qr-container" style="margin-top: 10px; display: none;">
+                <div id="qr-container" style="margin-top: 20px; display: none; text-align: center;">
                     <p>Vui lòng quét mã QR để thanh toán:</p>
-                    <img src="{{ asset('Cusimage/qrcode.png') }}" alt="QR Code" style="width: 200px; height: 200px;">
-                </div>
+                    <img src="{{ asset('Cusimage/qrcode.png') }}" alt="QR Code" style="width: 200px; height: 200px; border: 2px solid #ccc; border-radius: 8px;">
+                    <div style="margin-top: 10px; font-size: 16px; font-weight: bold; color: #1a73e8; background-color: #f1f3f4;  padding: 6px 12px; border-radius: 6px;">
+                Tổng tiền: {{ $totalPrice }} VNĐ
+                    </div>
+</div>
+
             </div>
 
             <!-- Dữ liệu ẩn -->

@@ -1,6 +1,4 @@
 <?php
-<<<<<<< HEAD
-
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
@@ -14,7 +12,7 @@ use Carbon\Carbon;
 class RoomController extends Controller
 {
     //
-    public function index()
+    public function chuyenphong()
     {
         // Fetch room status counts
         $statusCounts = DB::table('phong')
@@ -80,38 +78,40 @@ class RoomController extends Controller
     
         return preg_replace('/\s+/', ' ', $str); // Loại khoảng trắng thừa
 }
-}
-=======
-namespace App\Http\Controllers;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Session;
-use Illuminate\Support\Carbon;
-class RoomController extends Controller
-{
+
+
+
     public function index()
     {
         return view('Customer_Layouts.index');
     }
     public function search(Request $request)
-    {
-        $checkin = $request->input('checkin');
-        $checkout = $request->input('checkout');
-        $request->validate([
-            'checkin' => 'required|date|after_or_equal:today',
-            'checkout' => 'required|date|after:checkin',
-            'rooms' => 'required|integer|min:1',
-        ]);
-        // Thực hiện truy vấn trực tiếp đến cơ sở dữ liệu
-        $rooms = DB::table('phong as p')
-            ->join('loai_phong as lp', 'p.FK_ID_loai', '=', 'lp.ID_Loai')
-            ->select('p.so_phong', 'p.FK_ID_loai', 'p.hinh_anh', 'p.loai_giuong', 'p.don_gia', 'p.trang_thai',
-                     'lp.ten_loai', 'lp.dien_tich', 'lp.mo_ta', 'p.view')
-            ->where('p.trang_thai', 'Trống')
-            ->get();
-        return view('Customer_Layouts.index', compact('rooms', 'checkin', 'checkout'));
-    }
-    public function show($room_id)
+{
+    $checkin = $request->input('checkin');
+    $checkout = $request->input('checkout');
+    $roomCount = $request->input('rooms'); // đổi tên để không đụng với danh sách phòng
+
+    $request->validate([
+        'checkin' => 'required|date|after_or_equal:today',
+        'checkout' => 'required|date|after:checkin',
+        'rooms' => 'required|integer|min:1',
+    ]);
+
+    $rooms = DB::table('phong as p')
+        ->join('loai_phong as lp', 'p.FK_ID_loai', '=', 'lp.ID_Loai')
+        ->select('p.so_phong', 'p.FK_ID_loai', 'p.hinh_anh', 'p.loai_giuong', 'p.don_gia', 'p.trang_thai',
+                 'lp.ten_loai', 'lp.dien_tich', 'lp.mo_ta', 'p.view')
+        ->where('p.trang_thai', 'Trống')
+        ->get();
+
+    return view('Customer_Layouts.index', [
+        'rooms' => $rooms,
+        'checkin' => $checkin,
+        'checkout' => $checkout,
+        'roomCount' => $roomCount // truyền thêm biến này
+    ]);
+}
+public function show($room_id)
     {
         $room = DB::table('phong as p')
             ->join('loai_phong as lp', 'p.FK_ID_loai', '=', 'lp.ID_Loai')
@@ -128,28 +128,30 @@ class RoomController extends Controller
             ->select('tn.ten_tien_nghi')
             ->get();
         return view('Customer_Layouts.chitietphong', compact('room', 'amenities'));
-    }
+    } 
     
    
    
-    public function chaythu(Request $request)
+public function chaythu(Request $request)
 {
-    // Lấy dữ liệu gửi từ form JS
     $checkin = $request->input('checkin');
     $checkout = $request->input('checkout');
     $bookingTime = $request->input('booking_time');
     $totalPrice = $request->input('total_price');
     $rooms = $request->input('rooms', []);
 
-    // Gửi dữ liệu sang view
+    $user = Auth::user(); // Lấy thông tin user nếu đã đăng nhập
+
     return view('Customer_Layouts.chaythu', compact(
         'checkin',
         'checkout',
         'bookingTime',
         'totalPrice',
-        'rooms'
+        'rooms',
+        'user' // truyền thêm
     ));
 }
+
 
 
 public function luudulieu(Request $request)
@@ -175,11 +177,10 @@ public function luudulieu(Request $request)
     $rooms   = $request->input('rooms', []);
     $checkin = $request->input('checkin');
     $checkout = $request->input('checkout');
-
+    $user = Auth::user(); 
     // 3. Tính tổng tiền (ví dụ cộng tất cả đơn giá của các phòng, cần đảm bảo giá được xử lý dạng số)
     $tong_tien = 0;
     foreach ($rooms as $room) {
-        // Loại bỏ định dạng tiền, ví dụ: "2,199,100 VNĐ"
         $priceClean = str_replace([' VNĐ', 'đ', ','], '', $room['price']);
         $tong_tien += floatval($priceClean);
     }
@@ -187,12 +188,39 @@ public function luudulieu(Request $request)
     // 4. Transaction: lưu tất cả thông tin vào DB
     DB::transaction(function () use ($request, $rooms, $paymentMethod, $checkin, $checkout, $tong_tien) {
         // 4.1 Lưu khách hàng
+        
+        // 4.1 Kiểm tra user đã đăng nhập và tìm xem đã có thông tin khách hàng chưa
+
+$id_khach_hang = null;
+$user = Auth::user(); 
+if ($user) {
+    $existingCustomer = DB::table('khach_hang')->where('FK_ID_user', $user->id)->first();
+
+    if ($existingCustomer) {
+        // Đã tồn tại thông tin khách hàng, lấy ID
+        $id_khach_hang = $existingCustomer->FK_ID_user; // hoặc ID_KH tuỳ tên cột trong bảng của bạn
+    } else {
+        // Chưa có, tiến hành thêm mới
         $id_khach_hang = DB::table('khach_hang')->insertGetId([
-            'ho_ten' => $request->ho_ten,
-            'email'  => $request->email,
-            'sdt'    => $request->sdt,
-            'cccd'   => $request->cccd,
+            'ho_ten'     => $request->ho_ten,
+            'email'      => $request->email,
+            'sdt'        => $request->sdt,
+            'cccd'       => $request->cccd,
+            'FK_ID_user' => $user->id,
         ]);
+    }
+} else {
+    // Người dùng chưa đăng nhập, tạo khách hàng không gắn với user
+    $id_khach_hang = DB::table('khach_hang')->insertGetId([
+        'ho_ten' => $request->ho_ten,
+        'email'  => $request->email,
+        'sdt'    => $request->sdt,
+        'cccd'   => $request->cccd,
+        // Không có FK_ID_user
+    ]);
+}
+
+
 
         // 4.2 Lưu đặt phòng (booking)
         $id_dat_phong = DB::table('dat_phong')->insertGetId([
@@ -245,4 +273,4 @@ public function success()
     return view('Customer_Layouts.thanhcong');
 }
 }
->>>>>>> Cus_Booking_RoomDetail_Filter(Ad)
+

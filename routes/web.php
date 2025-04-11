@@ -39,14 +39,13 @@ Route::prefix('booking')->group(function () {
 
 require __DIR__.'/auth.php';
 
-<<<<<<< HEAD
 
 
 Route::get('/BookingList','App\Http\Controllers\BookingController@getBookings')->name('booking.list');
 Route::post('booking/update/{id}', 'App\Http\Controllers\BookingController@updateBooking')->name('booking.update');
 Route::get('/booking/edit/{id}/{room}', 'App\Http\Controllers\BookingController@editBooking')->name('booking.edit');
 Route::post('/booking/insert', 'App\Http\Controllers\BookingController@insertBooking')->name('booking.insert');
-Route::get('/quanly', 'App\Http\Controllers\RoomController@index')->name('admin.quanly')->middleware("admin");
+Route::get('/quanly', 'App\Http\Controllers\RoomController@chuyenphong')->name('admin.quanly')->middleware("admin");
 
 Route::get('/phieunhanphong/{id}', 'App\Http\Controllers\BookingController@createBooking')->name('booking.create');
 Route::post('/deletebooking', 'App\Http\Controllers\BookingController@delete')->name('booking.delete');
@@ -61,12 +60,12 @@ Route::get('/ajax/fetch-rooms', 'App\Http\Controllers\BookingController@fetchRoo
 
 // Xử lý chuyển phòng (POST)
 Route::post('/chuyen-phong', 'App\Http\Controllers\BookingController@submitTransfer')->name('chuyen-phong.submit');
-=======
-use App\Http\Controllers\RoomController;
+
+
 
 Route::get('/rooms', [RoomController::class, 'index'])->name('rooms.index');
 
-Route::post('/rooms', [RoomController::class, 'search'])->name('rooms.search');
+Route::post('/rooms', [RoomController::class, 'search'])->name('search1');
 
 Route::post('/rooms/xacnhan', [RoomController::class, 'xacNhan'])->name('rooms.xacnhan');
 Route::get('/rooms/xacnhan', [RoomController::class, 'xacNhan'])->name('rooms.xacnhan');
@@ -84,4 +83,4 @@ Route::post('/themdulieu', 'App\Http\Controllers\RoomController@chaythu')->name(
 
 // Xử lý lưu sách
 Route::post('/batdauluu', 'App\Http\Controllers\RoomController@luudulieu')->name("luu");
->>>>>>> Cus_Booking_RoomDetail_Filter(Ad)
+
