@@ -16,7 +16,7 @@ use App\Http\Controllers\BookingController;
 |
 */
 
-require __DIR__.'/auth.php';
+
 Route::get('register', [RegisteredUserController::class, 'create'])->name('register');
 Route::get('login', [LoginController::class, 'getLogin'])->name('login');
 // Public routes
@@ -24,6 +24,7 @@ Route::get('login', [LoginController::class, 'getLogin'])->name('login');
 Route::get('/', [HomeController::class, 'index'])->name('home');
 Route::get('/search', [HomeController::class, 'search'])->name('search');
 
+require __DIR__.'/auth.php';
 // Room routes
 Route::prefix('rooms')->group(function () {
     Route::get('/', [HomeController::class, 'index'])->name('rooms.index');
