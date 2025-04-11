@@ -1,10 +1,15 @@
 <?php
-<<<<<<< HEAD
 namespace App\Http\Controllers;
+
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Redirect;
+use Illuminate\Support\Facades\Auth;
+
+
+
 class RoomController extends Controller
 {
     public function index()
@@ -162,23 +167,10 @@ public function success()
 {
     return view('Customer_Layouts.thanhcong');
 }
-}
-=======
-
-namespace App\Http\Controllers;
-
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Session;
-use Illuminate\Support\Facades\Redirect;
-use Carbon\Carbon;
 
 
-class RoomController extends Controller
-{
     //
-    public function index()
+    public function quanly()
     {
         // Fetch room status counts
         $statusCounts = DB::table('phong')
@@ -245,4 +237,4 @@ class RoomController extends Controller
         return preg_replace('/\s+/', ' ', $str); // Loại khoảng trắng thừa
 }
 }
->>>>>>> Cus_Hompage_RoomDetail
+
