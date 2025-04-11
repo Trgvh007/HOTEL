@@ -162,15 +162,17 @@ th, td {
         @csrf
         <div style="flex: 1; margin-right: 15px;">
             <label style="display: block; margin-bottom: 5px;">Ngày đến</label>
-            <input type="date" id="checkin" name="checkin" style="width: 70%; padding: 10px; border: 1px solid #ccc; border-radius: 4px;">
+            <input type="date" id="checkin" name="checkin" value="{{ $checkin ?? '' }}"
+            style="width: 70%; padding: 10px; border: 1px solid #ccc; border-radius: 4px;">
         </div>
         <div style="flex: 1; margin-right: 15px;">
             <label style="display: block; margin-bottom: 5px;">Ngày đi</label>
-            <input type="date" id="checkout" name="checkout" style="width: 70%; padding: 10px; border: 1px solid #ccc; border-radius: 4px;">
+            <input type="date" id="checkout" name="checkout" value="{{ $checkout ?? '' }}" style="width: 70%; padding: 10px; border: 1px solid #ccc; border-radius: 4px;">
         </div>
         <div style="flex: 1; margin-right: 15px;">
             <label style="display: block; margin-bottom: 5px;">Số phòng</label>
-            <input type="number" id="rooms" name="rooms" style="width: 70%; padding: 10px; border: 1px solid #ccc; border-radius: 4px;">
+            <input type="number" id="rooms" name="rooms" value="{{ $roomCount ?? '' }}"
+ style="width: 70%; padding: 10px; border: 1px solid #ccc; border-radius: 4px;">
         </div>
         <div style="margin-left: 15px;">
             <button type="submit" style="background-color: #f1c40f; color: #fff; padding: 10px 30px; border: none; border-radius: 4px; cursor: pointer;">Tìm Kiếm</button>
@@ -235,18 +237,21 @@ th, td {
 </div>
 <script>
     document.addEventListener("DOMContentLoaded", function () {
-    // Tải lại giá trị đã lưu vào các trường input
-    if (localStorage.getItem("checkin")) {
-        document.getElementById("checkin").value = localStorage.getItem("checkin");
-    }
-    if (localStorage.getItem("checkout")) {
-        document.getElementById("checkout").value = localStorage.getItem("checkout");
-    }
-    if (localStorage.getItem("rooms")) {
-        document.getElementById("rooms").value = localStorage.getItem("rooms");
-    }
-});
+        // Nếu input chưa có value (tức chưa có từ Request), mới lấy từ localStorage
+        if (!document.getElementById("checkin").value && localStorage.getItem("checkin")) {
+            document.getElementById("checkin").value = localStorage.getItem("checkin");
+        }
+        if (!document.getElementById("checkout").value && localStorage.getItem("checkout")) {
+            document.getElementById("checkout").value = localStorage.getItem("checkout");
+        }
+        if (!document.getElementById("rooms").value && localStorage.getItem("rooms")) {
+            document.getElementById("rooms").value = localStorage.getItem("rooms");
+        }
+    });
+</script>
 
+<script>
+    
 function ktngay() {
     const checkinDate = new Date(document.getElementById('checkin').value);
     const checkoutDate = new Date(document.getElementById('checkout').value);
@@ -270,10 +275,7 @@ function ktngay() {
         return false; 
     }
 
-    // Lưu lại giá trị vào localStorage
-    localStorage.setItem("checkin", checkin.value);
-    localStorage.setItem("checkout", checkout.value);
-    localStorage.setItem("rooms", rooms.value);
+   
 
     return true;
 }
