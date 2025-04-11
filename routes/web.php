@@ -16,16 +16,17 @@ use App\Http\Controllers\BookingController;
 |
 */
 
-
+require __DIR__.'/auth.php';
 Route::get('register', [RegisteredUserController::class, 'create'])->name('register');
 Route::get('login', [LoginController::class, 'getLogin'])->name('login');
 // Public routes
+
 Route::get('/', [HomeController::class, 'index'])->name('home');
 Route::get('/search', [HomeController::class, 'search'])->name('search');
 
 // Room routes
 Route::prefix('rooms')->group(function () {
-    Route::get('/', [RoomController::class, 'index'])->name('rooms.index');
+    Route::get('/', [HomeController::class, 'index'])->name('rooms.index');
     Route::get('/search', [RoomController::class, 'search'])->name('rooms.search');
     Route::get('/{room}', [RoomController::class, 'show'])->name('rooms.show');
 });
@@ -37,7 +38,6 @@ Route::prefix('booking')->group(function () {
     Route::get('/done', [BookingController::class, 'done'])->name('booking.done');
 });
 
-require __DIR__.'/auth.php';
 
 
 
@@ -45,7 +45,7 @@ Route::get('/BookingList','App\Http\Controllers\BookingController@getBookings')-
 Route::post('booking/update/{id}', 'App\Http\Controllers\BookingController@updateBooking')->name('booking.update');
 Route::get('/booking/edit/{id}/{room}', 'App\Http\Controllers\BookingController@editBooking')->name('booking.edit');
 Route::post('/booking/insert', 'App\Http\Controllers\BookingController@insertBooking')->name('booking.insert');
-Route::get('/quanly', 'App\Http\Controllers\RoomController@index')->name('admin.quanly')->middleware("admin");
+Route::get('/quanly', 'App\Http\Controllers\RoomController@index')->name('admin.quanly')->middleware('auth', 'admin');
 
 Route::get('/phieunhanphong/{id}', 'App\Http\Controllers\BookingController@createBooking')->name('booking.create');
 Route::post('/deletebooking', 'App\Http\Controllers\BookingController@delete')->name('booking.delete');

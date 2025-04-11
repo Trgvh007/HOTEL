@@ -5,6 +5,7 @@ namespace App\Http\Middleware;
 use Closure;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Admin;
 class AdminMiddleware
 {
     /**
@@ -16,23 +17,21 @@ class AdminMiddleware
      */
   
 
-    public function handle(Request $request, Closure $next, $roleId = null)
+    public function handle(Request $request, Closure $next)
     {
     
 
         if (Auth::check()) {
             $user = Auth::user();
-
-            
+            \Log::info('Middleware chạy - User: ', ['id' => $user->id, 'role' => $user->id_role]);
+           
             // Kiểm tra vai trò của user
-            if (in_array($user->id_role, [1, 3])){
+            if ($user->id_role == 3) {
                 return $next($request);
-                \Log::info('Role của user: ' . Auth::user()->id_role);
-
             }
         }
 
         // Nếu không có quyền, chuyển về trang chủ
-        return redirect()->route('trangchu');
+       return redirect()->route('home');
     }
 }
