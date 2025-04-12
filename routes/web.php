@@ -17,11 +17,13 @@ use App\Http\Controllers\BookingController;
 */
 
 
-Route::get('register', [RegisteredUserController::class, 'create'])->name('register');
-Route::get('login', [LoginController::class, 'getLogin'])->name('login');
+//Route::get('register', [RegisteredUserController::class, 'create'])->name('register');
+//Route::get('login', [LoginController::class, 'getLogin'])->name('login');
+
 // Public routes
 Route::get('/', [HomeController::class, 'index'])->name('home');
 Route::get('/search', [HomeController::class, 'search'])->name('search');
+Route::get('/trangchu', [HomeController::class, 'trangchu'])->name('home');
 
 // Room routes
 Route::prefix('rooms')->group(function () {
@@ -49,6 +51,9 @@ Route::get('/quanly', 'App\Http\Controllers\RoomController@index')->name('admin.
 
 Route::get('/phieunhanphong/{id}', 'App\Http\Controllers\BookingController@createBooking')->name('booking.create');
 Route::post('/deletebooking', 'App\Http\Controllers\BookingController@delete')->name('booking.delete');
+
+//Route trang quản lý
+Route::get('/admin/quanly', 'App\Http\Controllers\AdminController@index')->name('admin.quanly')->middleware("admin:1");
 
 // Form chuyển phòng
 Route::get('/chuyen-phong/{room}', 'App\Http\Controllers\BookingController@showTransferForm')->name('chuyen-phong');

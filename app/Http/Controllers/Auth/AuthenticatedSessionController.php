@@ -31,8 +31,12 @@ class AuthenticatedSessionController extends Controller
         $request->authenticate();
 
         $request->session()->regenerate();
+        $user = Auth::user();
+        if ($user->FK_ID_vai_tro ==1 || $user->FK_ID_vai_tro == 3) {
+            return redirect()->route('admin.quanly');
+        } else return redirect()->route('home');
 
-        return redirect()->intended(RouteServiceProvider::HOME);
+        //return redirect()->intended(RouteServiceProvider::HOME);
     }
 
     /**
