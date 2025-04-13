@@ -28,12 +28,7 @@ class LoginController extends Controller
             $request->session()->regenerate(); // Ngăn chặn CSRF
             $user = Auth::user();
             dd($user);
-            
-            if ($user->id_role ==3){
-                return redirect()->route('admin.quanly');
-            } else {
-                return redirect()->route('home');
-            }
+           
         }
         return back()->withErrors([
             'email' => 'Thông tin đăng nhập không đúng.',
