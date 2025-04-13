@@ -116,3 +116,59 @@
     
 
 </x-Admin_Layouts>
+@if (session('status'))
+    <div id="toast-success" class="custom-toast success auto-hide">
+        <span class="icon">✅</span>
+        <span>{{ session('status') }}</span>
+        <button class="close-btn" onclick="this.parentElement.remove()">×</button>
+    </div>
+@endif
+
+<style>
+    .custom-toast {
+        position: fixed;
+        top: 20px;
+        left: 50%;
+        transform: translateX(-50%);
+        padding: 16px 24px;
+        border-radius: 10px;
+        font-size: 16px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+        color: white;
+        z-index: 9999;
+        animation: fadeInOut 4s ease-in-out forwards;
+    }
+
+    .custom-toast.success {
+        background-color: #28a745;
+    }
+
+    .custom-toast .icon {
+        font-size: 20px;
+    }
+
+    .custom-toast .close-btn {
+        background: transparent;
+        border: none;
+        font-size: 20px;
+        color: white;
+        cursor: pointer;
+        margin-left: auto;
+    }
+
+    @keyframes fadeInOut {
+        0% { opacity: 0; transform: translate(-50%, -20px); }
+        10% { opacity: 1; transform: translate(-50%, 0); }
+        90% { opacity: 1; transform: translate(-50%, 0); }
+        100% { opacity: 0; transform: translate(-50%, -20px); }
+    }
+</style>
+
+<script>
+    setTimeout(() => {
+        document.querySelectorAll('.auto-hide').forEach(el => el.remove());
+    }, 5000);
+</script>
