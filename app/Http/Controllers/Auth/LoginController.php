@@ -27,15 +27,14 @@ class LoginController extends Controller
         if (Auth::attempt($credentials)) {
             $request->session()->regenerate(); // Ngăn chặn CSRF
             $user = Auth::user();
-<<<<<<< HEAD
-            dd($user);
-           
-=======
+
+            
+
             if ($user->FK_ID_vai_tro ==1 || $user->FK_ID_vai_tro == 3) {
                 return redirect()->route('admin.quanly');
             } else return redirect()->route('trangchu');
             
->>>>>>> 9fbf7df49ca4c6737dadcccc82b750f3db3b2453
+
         }
         return back()->withErrors([
             'email' => 'Thông tin đăng nhập không đúng.',

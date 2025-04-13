@@ -40,13 +40,13 @@
 
                     <!-- Email -->
                     <div style="margin-bottom: 1rem;">
-                        <x-label for="email" :value="__('Email')" />
+                        <x-label for="email" :value="__('Email')" /> <br>
                         <x-input id="email" class="block mt-1 w-full" type="email" name="email" :value="old('email')" required autofocus />
                     </div>
 
                     <!-- Password -->
                     <div style="margin-bottom: 1.5rem;">
-                        <x-label for="password" :value="__('Password')" />
+                        <x-label for="password" :value="__('Password')" /><br>
                         <x-input id="password" class="block mt-1 w-full" type="password" name="password" required autocomplete="current-password" />
                     </div>
 

@@ -15,34 +15,25 @@ class AdminMiddleware
      * @param  \Closure(\Illuminate\Http\Request): (\Illuminate\Http\Response|\Illuminate\Http\RedirectResponse)  $next
      * @return \Illuminate\Http\Response|\Illuminate\Http\RedirectResponse
      */
-<<<<<<< HEAD
+
   
 
-    public function handle(Request $request, Closure $next)
-    {
-    
-
-        if (Auth::check()) {
-            $user = Auth::user();
-         
-    
-            // Kiểm tra vai trò của user
-            if ($user->id_role == 3) {
-                return $next($request);
-            }
-            // Nếu không có quyền, chuyển về trang chủ
-            return redirect()->route('home');
-        }
-
-        
-=======
     public function handle(Request $request, Closure $next, $role)
     {
-        $id = Auth::user()->FK_ID_vai_tro;
-        if (!Auth::check()||$id !=$role) {
-            return redirect()->route("admin.quanly")-> with("error","Bạn không có quyền truy cập vào trang này!");
+    
+        if (!Auth::check()) {
+            return redirect()->route('login');
         }
+
+        $id = Auth::user()->FK_ID_vai_tro;
+
+        // Xử lý nhiều role, ví dụ: '1|3'
+        $allowedRoles = explode('|', $role);
+        if (!in_array($id, $allowedRoles)) {
+          
+            return redirect('/')->with('error', 'Bạn không có quyền truy cập vào trang này!');
+        }
+
         return $next($request);
->>>>>>> 9fbf7df49ca4c6737dadcccc82b750f3db3b2453
     }
 }

@@ -8,6 +8,30 @@
     <link rel="stylesheet" href="./css/qlystyle.css">
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
+    <style>
+     .avatar-wrapper {
+        position: relative;
+        display: inline-block;
+    }
+
+    .avatar-wrapper img {
+        width: 80px;
+        height: 80px;
+        border-radius: 50%;
+    }
+
+    .status-indicator {
+        position: absolute;
+        bottom: 5px;
+        right: 5px;
+        width: 15px;
+        height: 15px;
+        background-color: #28a745; /* màu xanh lá cây */
+        border: 2px solid white;
+        border-radius: 50%;
+    }
+    
+    </style>
 </head>
 <body>
 
@@ -17,16 +41,20 @@
         </div>
         
             <div class="user-info">
-            <?php
-       if (isset($_SESSION["Ho_ten"])) { 
-    
-        $avatar = ($_SESSION['gioi_tinh'] == 'Nam') ? './image/avanam.png' : './image/aviiia.png'; // Chọn avatar
-     ?>
-     <img src="<?php echo $avatar; ?>" alt="User Image"><br>
-     <span> <?php  echo $_SESSION['Ho_ten'] . '</span>';
-    }
- ?>
-        </div>
+            @auth
+            @php
+                $nhanVien = Auth::user()->nhanVien;
+                $gender = $nhanVien->Gioi_tinh ?? 'Nam';
+                $avatar = $gender === 'Nam' ? asset('Adimage/avanam.png') : asset('Adimage/aviiia.png');
+            @endphp
+            <div class="avatar-wrapper mb-2">
+            <img src="{{ $avatar }}" alt="User Image"><br>
+            <span class="status-indicator"></span>
+</div>
+            <div class="font-weight-bold" style="font-size: 1.1rem;">{{$nhanVien->Ho_ten }}</div> <br>
+            <div class="text-muted" style="font-size: 0.95rem;"><b>({{$nhanVien->Chuc_vu }})</b></div>
+        @endauth
+    </div>
 
         <ul class="menu">
             

@@ -98,18 +98,38 @@
         width: 60%;
         max-width: 800px; /* Adjust width as needed */
     }
+
+    
+
     </style>
 
 
 {{$slot}}
+
 </head>
 <body>
 <script> 
     function goBack() {
     // Redirect to the desired page
-    window.location.href = "{{ route('booking.list') }}"; // Replace with your actual page
+    window.location.href = "{{ route('admin.quanly') }}"; // Replace with your actual page
 }
+
+    //hàm xử lý kiểm tra xem ngày ra có lớn hơn ngày vào không.
+        function validateDates() {
+            const checkin = new Date(document.getElementById('checkin').value);
+            const checkout = new Date(document.getElementById('checkout').value);
+            if (checkin >= checkout) {
+                alert("Ngày ra phải lớn hơn ngày vào!");
+                return false;
+            }
+            return true;
+        }
+
+       
+
 </script>
+
+
 
  
            

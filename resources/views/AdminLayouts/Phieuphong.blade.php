@@ -2,6 +2,7 @@
     <x-slot name='title'> 
         {{ $action =='edit' ? 'Chỉnh sửa đặt phòng': 'Phiếu nhận phòng' }} </x-slot>
         
+       
 <div class="container">
             <div class="header">
                 <img src="/Adimage/person.png" width="35px" padding = "15px"   margin=" 10px">
@@ -9,7 +10,7 @@
                 <span style="font-size: 30px">
                 {{ $action == 'edit' ? "Chỉnh sửa đặt phòng - R{$roomDetails->so_phong}" : "Phiếu nhận phòng {$roomDetails->so_phong}" }}
                 @if($action == 'edit')
-                <a href="{{ route('chuyen-phong', ['room' => $roomDetails->so_phong]) }}" class="edit">✏️</a> - [{{ $booking->ID_Booking ?? '' }}]
+                <a href="{{ route('chuyen-phong', ['room' => $roomDetails->so_phong]) }}" class="edit" onclick="openTransferModal(event)">✏️</a> - [{{ $booking->ID_Booking ?? '' }}]
                 @endif
             </span>
 </div>
@@ -18,13 +19,15 @@
           
             @csrf
             <div class="section">
-        <div class="section-title">Thông tin đăng ký - <span style="color: red;">{{$booking->ten_loai ?? '' }}</span></div>
+        <div class="section-title">Thông tin đăng ký - <span style="color: red;">{{$roomDetails->ten_loai ?? '' }}</span></div>
+        <input type="hidden" name="room_id" value="{{ $roomDetails->so_phong }}">
+
         <div class="registration-info">
             <div class="column">
                 <div class="form-group">
                     <label for="checkin">Ngày vào:</label>
-                    <input type="date" id="checkin" name="checkin" value="{{ old('checkin', $booking->ngay_vao ?? '') }}">
-                    <input type="time" name="time_checkin" class="time" value="{{ old('time_checkin', $booking->gio_vao ?? '') }}">
+                    <input type="date" id="checkin" name="checkin" value="{{ old('checkin', $booking->ngay_vao ?? $now->format('Y-m-d')) }}">
+                    <input type="time" name="time_checkin" class="time" value="{{ old('time_checkin', $booking->gio_vao ?? $now->format('H:i'))  }}">
                 </div>
                 <div class="form-group">
                     <label for="checkout">Ngày ra:</label>
@@ -122,10 +125,13 @@
                     <button type="button" class="cancel" onclick="goBack()">Cancel</button>
                     <button type="submit" class="confirm">✅ Cập nhật</button>
                 @else
-                    <button type="reset" class="cancel" onclick="goBack()">Hủy</button>
+                    <button type="button" class="cancel" onclick="goBack()">Hủy</button>
                     <button type="submit" class="confirm">✅ Nhận phòng</button>
                 @endif
             </form>
             </div>
-          
+            </div>
+            </div>
+
+           
             </x-phieuphong>

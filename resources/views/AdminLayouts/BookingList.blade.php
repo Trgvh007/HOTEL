@@ -1,4 +1,5 @@
- <!-- Kiểm tra và hiển thị thông báo thành công -->
+
+
 
     <!-- Kiểm tra và hiển thị lỗi -->
     @if ($errors->any())
@@ -94,4 +95,7 @@ Danh Sách Đặt Phòng
             <button onclick="printTable()" class="btn btn-primary">Print</button>
             <button style = "background: blue; color:#fff";  class="btn btn-primary"> ✅ Nhận phòng </button>
           </div>
+
+        
+
 </x-Admin_Layout>

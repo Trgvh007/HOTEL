@@ -36,43 +36,35 @@ Route::prefix('rooms')->group(function () {
 });
 
 // Booking routes
-Route::prefix('booking')->group(function () {
-    Route::get('/confirm', [BookingController::class, 'confirm'])->name('booking.confirm');
-    Route::post('/store', [BookingController::class, 'store'])->name('booking.store');
-    Route::get('/done', [BookingController::class, 'done'])->name('booking.done');
+Route::middleware(['admin:1|3'])->group(function () {
+
+
+    Route::prefix('booking')->group(function () {
+        Route::get('/confirm', [BookingController::class, 'confirm'])->name('booking.confirm');
+        Route::post('/store', [BookingController::class, 'store'])->name('booking.store');
+        Route::get('/done', [BookingController::class, 'done'])->name('booking.done');
+    });
+
+    Route::get('/BookingList', [BookingController::class, 'getBookings'])->name('booking.list');
+    Route::post('booking/update/{id}', [BookingController::class, 'updateBooking'])->name('booking.update');
+    Route::get('/booking/edit/{id}/{room}', [BookingController::class, 'editBooking'])->name('booking.edit');
+    Route::post('/booking/insert', [BookingController::class, 'insertBooking'])->name('booking.insert');
+
+    Route::get('/quanly', [RoomController::class, 'quanly'])->name('admin.quanly');
+
+    Route::get('/phieunhanphong/{id}', [BookingController::class, 'createBooking'])->name('booking.create');
+    Route::post('/deletebooking', [BookingController::class, 'delete'])->name('booking.delete');
+
+    // Chuyển phòng
+    Route::get('/chuyen-phong/{room}', [BookingController::class, 'showTransferForm'])->name('chuyen-phong');
+    Route::post('/chuyen-phong', [BookingController::class, 'submitTransfer'])->name('chuyen-phong.submit');
+
+    // AJAX room fetch
+    Route::get('/fetchrooms', [BookingController::class, 'fetchRooms'])->name('fetch.rooms');
+    Route::get('/ajax/fetch-rooms', [BookingController::class, 'fetchRooms'])->name('ajax.fetch-rooms');
+
 });
 
-
-
-Route::get('/BookingList','App\Http\Controllers\BookingController@getBookings')->name('booking.list');
-Route::post('booking/update/{id}', 'App\Http\Controllers\BookingController@updateBooking')->name('booking.update');
-Route::get('/booking/edit/{id}/{room}', 'App\Http\Controllers\BookingController@editBooking')->name('booking.edit');
-Route::post('/booking/insert', 'App\Http\Controllers\BookingController@insertBooking')->name('booking.insert');
-
-Route::get('/quanly', 'App\Http\Controllers\RoomController@quanly')->name('admin.quanly')->middleware('admin');
-
-
-
-Route::get('/phieunhanphong/{id}', 'App\Http\Controllers\BookingController@createBooking')->name('booking.create');
-Route::post('/deletebooking', 'App\Http\Controllers\BookingController@delete')->name('booking.delete');
-
-//Route trang quản lý
-Route::get('/admin/quanly', 'App\Http\Controllers\AdminController@index')->name('admin.quanly')->middleware("admin:1");
-
-// Form chuyển phòng
-Route::get('/chuyen-phong/{room}', 'App\Http\Controllers\BookingController@showTransferForm')->name('chuyen-phong');
-
-// Lấy danh sách phòng trống theo loại (AJAX)
-Route::get('/fetchrooms', 'App\Http\Controllers\BookingController@fetchRooms')->name('fetch.rooms');
-// Route để fetch danh sách phòng
-Route::get('/ajax/fetch-rooms', 'App\Http\Controllers\BookingController@fetchRooms')->name('ajax.fetch-rooms');
-
-// Xử lý chuyển phòng (POST)
-Route::post('/chuyen-phong', 'App\Http\Controllers\BookingController@submitTransfer')->name('chuyen-phong.submit');
-
-
-
-Route::get('/rooms', [RoomController::class, 'index'])->name('rooms.index');
 
 
 

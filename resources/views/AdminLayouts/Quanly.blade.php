@@ -1,5 +1,11 @@
 <x-Admin_Layout>
 <x-slot name='title'>Quản lý Khách sạn</x-slot>
+@if (session('status'))
+    <script>
+        alert("{{ session('status') }}");
+    </script>
+@endif
+
 
 <div class="content">
         <div class="header">

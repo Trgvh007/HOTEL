@@ -19,24 +19,25 @@
     padding: 20px;
     box-sizing: border-box;
     padding-left: 80px;
+    overflow: auto; /* Thêm để cuộn toàn bộ overlay nếu cần */
 }
 
 #room-detail-html {
-    background:#FFFFF0;
+    background: #FFFFF0;
     border-radius: 10px;
     padding: 20px;
     width: 90%;
     max-width: 1200px;
-    height: auto;
+    max-height: 90vh;
+    overflow-y: auto; /* Bật cuộn dọc */
+    overflow-x: hidden; /* Ẩn cuộn ngang nếu không cần */
     display: flex;
     flex-direction: row;
     justify-content: space-between;
     box-shadow: 0 6px 20px rgba(0,0,0,0.2);
-    overflow: visible;
-    max-height: 90vh;
     position: relative;
     transform: translateX(8%);
-    align-items: stretch; 
+    align-items: stretch;
 }
 
 .image-container {
