@@ -15,6 +15,7 @@ class AdminMiddleware
      * @param  \Closure(\Illuminate\Http\Request): (\Illuminate\Http\Response|\Illuminate\Http\RedirectResponse)  $next
      * @return \Illuminate\Http\Response|\Illuminate\Http\RedirectResponse
      */
+<<<<<<< HEAD
   
 
     public function handle(Request $request, Closure $next)
@@ -34,5 +35,14 @@ class AdminMiddleware
         }
 
         
+=======
+    public function handle(Request $request, Closure $next, $role)
+    {
+        $id = Auth::user()->FK_ID_vai_tro;
+        if (!Auth::check()||$id !=$role) {
+            return redirect()->route("admin.quanly")-> with("error","Bạn không có quyền truy cập vào trang này!");
+        }
+        return $next($request);
+>>>>>>> 9fbf7df49ca4c6737dadcccc82b750f3db3b2453
     }
 }
