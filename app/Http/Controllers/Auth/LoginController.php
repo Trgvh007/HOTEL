@@ -7,6 +7,7 @@ use App\Http\Requests\Auth\LoginRequest;
 use App\Providers\RouteServiceProvider;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Admin;
 
 
 
@@ -26,13 +27,22 @@ class LoginController extends Controller
     {
         $credentials = $request->only('email', 'password');
 
+        
         if (Auth::attempt($credentials)) {
+
+            $request->session()->regenerate(); // Ngăn chặn CSRF
+            $user = Auth::user();
+            dd($user);
+            
+            if ($user->id_role ==3){
+
             $request->session()->regenerate(); // Ngăn chặn CSRf
 
       
 
           
             if (in_array($user->id_role, [1, 3])){
+
                 return redirect()->route('admin.quanly');
             } else {
                 return redirect()->route('home');

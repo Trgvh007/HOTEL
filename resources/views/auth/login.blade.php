@@ -1,3 +1,12 @@
+
+
+    <x-auth-card>
+        <x-slot name="logo">
+            <a href="/">
+                 <!--<x-application-logo class="w-20 h-20 fill-current text-gray-500" />-->
+                 <img src="{{asset('image/Logo.png')}}" width='300px'>
+            </a>
+        </x-slot>
 <x-guest-layout>
 
    
@@ -28,6 +37,7 @@
             ">
                 <img src="{{ asset('image/Logo.png') }}" alt="Logo" style="width: 300px;">
             </div>
+
 
             <!-- Form -->
             <div style="padding: 3rem; width: 400px;">
@@ -96,6 +106,12 @@
 
                 </form>
             </div>
+
+        </form>
+    </x-auth-card>
+
+
         </div>
     </div>
 </x-guest-layout>
+
