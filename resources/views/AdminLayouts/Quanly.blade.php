@@ -12,7 +12,10 @@
             <h2>Sơ đồ khách sạn</h2>
             <div>
                 <a href="#">Chuyển ca</a>
-                <a href="#">Thoát</a>
+                <a href="#" onclick="logoutWithConfirm()">Thoát</a>
+                <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
+    @csrf
+</form>
             </div>
         </div>
         <h1>Sơ đồ khách sạn</h1>
@@ -122,3 +125,12 @@
     
 
 </x-Admin_Layouts>
+
+
+<script>
+    function logoutWithConfirm() {
+        if (confirm('Bạn có chắc chắn muốn đăng xuất không?')) {
+            document.getElementById('logout-form').submit();
+        }
+    }
+</script>

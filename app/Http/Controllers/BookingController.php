@@ -301,9 +301,26 @@ public function updateBooking($id, Request $request)
 
         } catch (Exception $e) {
             DB::rollback(); // Rollback nếu có lỗi
-            return back()->with('error', 'Lỗi khi xử lý: ' . $e->getMessage());
-        }
+           // Lấy mã lỗi SQL
+    $sqlErrorCode = $e->errorInfo[1];
+
+    // Gợi ý lỗi phổ biến
+    $errorMessage = 'Lỗi khi xử lý đặt phòng.';
+
+    if ($sqlErrorCode == 1062) {
+        // 1062 là lỗi Duplicate entry (MySQL)
+        $errorMessage = 'Dữ liệu đã tồn tại. Có thể CCCD, email hoặc số điện thoại bị trùng.';
+    } elseif ($sqlErrorCode == 1452) {
+        // 1452 là lỗi foreign key constraint fails
+        $errorMessage = 'Ràng buộc dữ liệu không đúng. Có thể ID phòng hoặc khách hàng không tồn tại.';
     }
+
+    return back()->with('error', $errorMessage);
+} catch (Exception $e) {
+    DB::rollback();
+    return back()->with('error', 'Lỗi không xác định: ' . $e->getMessage());
+    }
+}
         //hiển thị form nhận phòng
     public function createBooking($room_id)
 {
@@ -555,6 +572,8 @@ public function showTransferForm($room)
         }
     }
    
+    
+
     
 }
 

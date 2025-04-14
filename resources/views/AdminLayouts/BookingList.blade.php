@@ -29,7 +29,10 @@ Danh Sách Đặt Phòng
             <h2>Danh sách đặt phòng</h2>
             <div>
                 <a href="#">Chuyển ca</a>
-                <a href="#">Thoát</a>
+                <a href="#" onclick="logoutWithConfirm()">Thoát</a>
+                <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
+    @csrf
+</form>
             </div>
         </div>
         <div class="filter-section">
@@ -99,3 +102,12 @@ Danh Sách Đặt Phòng
         
 
 </x-Admin_Layout>
+
+
+<script>
+    function logoutWithConfirm() {
+        if (confirm('Bạn có chắc chắn muốn đăng xuất không?')) {
+            document.getElementById('logout-form').submit();
+        }
+    }
+</script>

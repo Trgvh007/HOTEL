@@ -63,9 +63,16 @@ Route::middleware(['admin:1|3'])->group(function () {
     Route::get('/fetchrooms', [BookingController::class, 'fetchRooms'])->name('fetch.rooms');
     Route::get('/ajax/fetch-rooms', [BookingController::class, 'fetchRooms'])->name('ajax.fetch-rooms');
 
+
+   
 });
 
-
+Route::post('/logout', function () {
+    Auth::logout();
+    request()->session()->invalidate();
+    request()->session()->regenerateToken();
+    return redirect('/'); // hoặc về trang chủ
+})->name('logout');
 
 
 Route::get('/rooms', [RoomController::class, 'index'])->name('rooms.index');

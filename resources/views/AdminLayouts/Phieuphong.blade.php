@@ -1,3 +1,11 @@
+@if(session('error'))
+    <script>
+        alert("{{ session('error') }}");
+    </script>
+@endif
+
+
+
 <x-phieuphong>
     <x-slot name='title'> 
         {{ $action =='edit' ? 'Chỉnh sửa đặt phòng': 'Phiếu nhận phòng' }} </x-slot>
