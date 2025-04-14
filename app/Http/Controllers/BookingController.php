@@ -571,9 +571,21 @@ public function showTransferForm($room)
             return back()->with('error', 'Có lỗi xảy ra khi đặt phòng. Vui lòng thử lại.');
         }
     }
+<<<<<<< HEAD
    
     
 
     
 }
+=======
+    public function editAjax($id, $room)
+    {
+        $booking = DB::table('dat_phong')->where('ID_Booking', $id)->first();
+        $roomDetails = DB::table('phong')->where('so_phong', $room)->first();
+    
+        return view('AdminLayouts.Phieuphong', compact('booking', 'roomDetails'))->with('action', 'edit');
+    }
+    
+>>>>>>> Cus_Booking_RoomDetail_Filter(Ad)
 
+}

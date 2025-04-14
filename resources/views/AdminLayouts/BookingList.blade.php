@@ -83,7 +83,8 @@ Danh Sách Đặt Phòng
                     <td>{{ $checkin->ngay_dat }}</td>
                     <td>
                         @if($checkin->checkindate >= date('Y-m-d'))
-                            <a href="{{route('booking.edit', ['id' => $checkin->ma_booking, 'room' => $checkin->phong]) }}" class='edit'>✏️</a>
+                        <a href="javascript:void(0);" onclick="openPhieuPhong('{{ $checkin->ma_booking }}', '{{ $checkin->phong }}')" class="edit">✏️</a>
+
                         @endif
                         <a href="#" onclick="deleteBooking('{{ $checkin->ma_booking  }}', '{{  $checkin->phong}}', this)" class='delete'>❌</a>
                     </td>
@@ -98,6 +99,7 @@ Danh Sách Đặt Phòng
             <button onclick="printTable()" class="btn btn-primary">Print</button>
             <button style = "background: blue; color:#fff";  class="btn btn-primary"> ✅ Nhận phòng </button>
           </div>
+<<<<<<< HEAD
 
         
 
@@ -111,3 +113,32 @@ Danh Sách Đặt Phòng
         }
     }
 </script>
+=======
+          <div id="overlay-background" onclick="closePhieuPhong()"
+     style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.6); z-index:999;"></div>
+
+<div id="phieu-phong-overlay"
+     style="display:none; position:fixed; top:50%; left:50%; transform:translate(-50%,-50%);
+     background:white; padding:30px; border-radius:12px; z-index:1000; max-height:90vh; overflow-y:auto; width:80%;">
+</div>
+
+<script>
+function openPhieuPhong(bookingId, roomNumber) {
+    fetch(`/booking/edit-ajax/${bookingId}/${roomNumber}`)
+        .then(res => res.text())
+        .then(html => {
+            document.getElementById('phieu-phong-overlay').innerHTML = html;
+            document.getElementById('overlay-background').style.display = 'block';
+            document.getElementById('phieu-phong-overlay').style.display = 'block';
+        });
+}
+
+function closePhieuPhong() {
+    document.getElementById('overlay-background').style.display = 'none';
+    document.getElementById('phieu-phong-overlay').style.display = 'none';
+}
+</script>
+
+
+</x-Admin_Layout>
+>>>>>>> Cus_Booking_RoomDetail_Filter(Ad)

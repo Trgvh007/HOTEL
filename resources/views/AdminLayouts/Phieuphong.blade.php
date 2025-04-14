@@ -12,11 +12,10 @@
         
        
 <div class="container">
-            <div class="header">
-                <img src="/Adimage/person.png" width="35px" padding = "15px"   margin=" 10px">
-              
-                <span style="font-size: 30px">
-                {{ $action == 'edit' ? "Chỉnh sửa đặt phòng - R{$roomDetails->so_phong}" : "Phiếu nhận phòng {$roomDetails->so_phong}" }}
+<div class="header" style="display: flex; justify-content: center; align-items: center; background-color: #d32f2f; color: white; padding: 12px; border-radius: 5px;">
+    <img src="/Adimage/person.png" width="35px" style="margin-right: 10px;">
+    <span style="font-size: 24px; font-weight: bold;">
+        {{ $action == 'edit' ? "Chỉnh sửa đặt phòng - R{$roomDetails->so_phong}" : "Phiếu nhận phòng {$roomDetails->so_phong}" }}
                 @if($action == 'edit')
                 <a href="{{ route('chuyen-phong', ['room' => $roomDetails->so_phong]) }}" class="edit" onclick="openTransferModal(event)">✏️</a> - [{{ $booking->ID_Booking ?? '' }}]
                 @endif
@@ -138,8 +137,13 @@
                 @endif
             </form>
             </div>
+<<<<<<< HEAD
             </div>
             </div>
 
            
             </x-phieuphong>
+=======
+          
+            </x-phieuphong>
+>>>>>>> Cus_Booking_RoomDetail_Filter(Ad)
