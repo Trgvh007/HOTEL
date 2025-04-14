@@ -8,6 +8,10 @@
             </a>
         </x-slot>
 <x-guest-layout>
+
+   
+       
+
     <div style="
         display: flex;
         justify-content: center;
@@ -39,14 +43,25 @@
             <div style="padding: 3rem; width: 400px;">
                 <h2 style="font-size: 24px; font-weight: bold; margin-bottom: 1.5rem;">Welcome back!</h2>
 
+
                 <!-- Session Status -->
                 <x-auth-session-status class="mb-4" :status="session('status')" />
+
+
+        <form method="POST" action="{{ route('login') }}">
+            @csrf
+            <label><input type="radio" name="level" value="{{ \App\Models\User::ROLE_ADMIN }}" checked> Quản lý</label><br>
+            <label><input type="radio" name="level" value="{{ \App\Models\User::ROLE_USER }}"> Khách hàng</label><br>
+            <!-- Email Address -->
+            <div>
+                <x-label for="email" :value="__('Email')" />
 
                 <!-- Validation Errors -->
                 <x-auth-validation-errors class="mb-4" :errors="$errors" />
 
                 <form method="POST" action="{{ route('login') }}">
                     @csrf
+
 
                     <!-- Email -->
                     <div style="margin-bottom: 1rem;">

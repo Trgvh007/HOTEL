@@ -16,7 +16,16 @@ use App\Http\Controllers\BookingController;
 |
 */
 
-require __DIR__.'/auth.php';
+
+
+
+
+/*Route::get('/', function () {
+    return view('welcome');
+});*/
+
+
+
 Route::get('register', [RegisteredUserController::class, 'create'])->name('register');
 Route::get('login', [LoginController::class, 'getLogin'])->name('login');
 // Public routes
@@ -31,12 +40,17 @@ Route::prefix('rooms')->group(function () {
     Route::get('/{room}', [RoomController::class, 'show'])->name('rooms.show');
 });
 
+
+require __DIR__.'/auth.php';
 // Booking routes
 Route::prefix('booking')->group(function () {
     Route::get('/confirm', [BookingController::class, 'confirm'])->name('booking.confirm');
     Route::post('/store', [BookingController::class, 'store'])->name('booking.store');
     Route::get('/done', [BookingController::class, 'done'])->name('booking.done');
 });
+
+
+Route::get('/trangchu', 'App\Http\Controllers\TrangchuController@trangchu');
 
 
 
@@ -60,3 +74,4 @@ Route::get('/ajax/fetch-rooms', 'App\Http\Controllers\BookingController@fetchRoo
 
 // Xử lý chuyển phòng (POST)
 Route::post('/chuyen-phong', 'App\Http\Controllers\BookingController@submitTransfer')->name('chuyen-phong.submit');
+
