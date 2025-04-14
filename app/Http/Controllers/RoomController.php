@@ -179,11 +179,12 @@ public function luudulieu(Request $request)
     $checkout = $request->input('checkout');
     $user = Auth::user(); 
     // 3. Tính tổng tiền (ví dụ cộng tất cả đơn giá của các phòng, cần đảm bảo giá được xử lý dạng số)
-    $tong_tien = 0;
-    foreach ($rooms as $room) {
-        $priceClean = str_replace([' VNĐ', 'đ', ','], '', $room['price']);
-        $tong_tien += floatval($priceClean);
-    }
+   $tong_tien = 0;
+foreach ($rooms as $room) {
+    $priceClean = str_replace([' VNĐ', 'đ', ','], '', $room['price']);
+    $tong_tien += floatval($priceClean);
+}
+$tong_tien *= 1000; // Thêm 3 số 0 vào cuối
 
     // 4. Transaction: lưu tất cả thông tin vào DB
     DB::transaction(function () use ($request, $rooms, $paymentMethod, $checkin, $checkout, $tong_tien) {
