@@ -1,4 +1,9 @@
 <x-guest-layout>
+
+   
+
+      
+
     <div style="
         display: flex;
         justify-content: center;
@@ -23,6 +28,7 @@
                 align-items: center;
             ">
                 <img src="{{ asset('image/Logo.png') }}" alt="Logo" style="width: 300px;">
+
             </div>
 
             <!-- Form -->
