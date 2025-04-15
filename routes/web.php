@@ -23,6 +23,9 @@ use App\Http\Controllers\BookingController;
 // Public routes
 
 
+
+
+
 Route::get('/', [HomeController::class, 'index'])->name('home');
 Route::get('/search', [HomeController::class, 'search'])->name('search');
 Route::get('/trangchu', [HomeController::class, 'trangchu'])->name('home');
@@ -34,6 +37,8 @@ Route::prefix('rooms')->group(function () {
     Route::get('/search', [RoomController::class, 'search'])->name('rooms.search');
     Route::get('/{room}', [RoomController::class, 'show'])->name('rooms.show');
 });
+
+
 
 // Booking routes
 Route::middleware(['admin:1|3'])->group(function () {
@@ -70,6 +75,7 @@ Route::middleware(['admin:1|3'])->group(function () {
 });
 
 
+
 Route::post('/logout', function () {
     Auth::logout();
     request()->session()->invalidate();
@@ -94,6 +100,7 @@ Route::get('/booking-success', [RoomController::class, 'success'])->name('thanhc
 Route::get('/in-phieu', [RoomController::class, 'printReceipt'])->name('booking.print');
 
 
+
 //chi tiết phòng mới
 // web.php
 Route::get('/rooms/show/{room_id}', [RoomController::class, 'show'])->name('rooms.show');
@@ -106,4 +113,6 @@ Route::post('/batdauluu', 'App\Http\Controllers\RoomController@luudulieu')->name
 Route::get('/booking/edit-ajax/{id}/{room}', [BookingController::class, 'editAjax'])->name('booking.editAjax');
 
 Route::post('/batdauluu', 'App\Http\Controllers\RoomController@luudulieu')->name("luu");
+
+
 
