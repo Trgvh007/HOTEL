@@ -1,41 +1,91 @@
 <x-guest-layout>
-    <div class="flex items-center justify-center min-h-screen bg-yellow-100">
-        <div class="bg-white bg-opacity-80 backdrop-blur-md shadow-xl rounded-2xl px-10 py-8 w-full max-w-md">
-            
+    <div style="
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh;
+        background-color: #fef3c7;
+    ">
+        <div style="
+            background-color: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(8px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            border-radius: 1rem;
+            padding: 2rem 2.5rem;
+            max-width: 400px;
+            width: 100%;
+        ">
+
             <!-- Logo -->
-            <div class="flex justify-center mb-6">
+            <div style="display: flex; justify-content: center; margin-bottom: 1.5rem;">
                 <a href="/">
-                    <img src="{{ asset('image/Logo.png') }}" alt="Logo" class="w-48">
+                    <img src="{{ asset('image/Logo.png') }}" alt="Logo" style="width: 12rem;">
                 </a>
             </div>
 
             <!-- Heading -->
-            <h2 class="text-center text-2xl font-bold text-gray-700 mb-2">Forgot your password?</h2>
-            <p class="text-center text-sm text-gray-600 mb-6">
+            <h2 style="text-align: center; font-size: 1.5rem; font-weight: bold; color: #374151; margin-bottom: 0.5rem;">
+                Forgot your password?
+            </h2>
+            <p style="text-align: center; font-size: 0.875rem; color: #4B5563; margin-bottom: 1.5rem;">
                 No worries! Enter your email and we’ll send you a reset link 💌
             </p>
 
             <!-- Session Status -->
-            <x-auth-session-status class="mb-4" :status="session('status')" />
+            @if (session('status'))
+                <div style="color: green; text-align: center; margin-bottom: 1rem;">
+                    {{ session('status') }}
+                </div>
+            @endif
 
             <!-- Validation Errors -->
-            <x-auth-validation-errors class="mb-4" :errors="$errors" />
+            @if ($errors->any())
+                <div style="color: red; margin-bottom: 1rem;">
+                    <ul style="font-size: 0.875rem;">
+                        @foreach ($errors->all() as $error)
+                            <li>• {{ $error }}</li>
+                        @endforeach
+                    </ul>
+                </div>
+            @endif
 
             <!-- Form -->
             <form method="POST" action="{{ route('password.email') }}">
                 @csrf
 
                 <!-- Email -->
-                <div class="flex flex-col items-center mb-5">
-                    <label for="email" class="mb-1 text-sm text-gray-700 w-full text-center padding:10px">Email</label>
-                    <x-input id="email" class="w-64 text-center" type="email" name="email" :value="old('email')" required autofocus />
+                <div style="margin-bottom: 1.5rem;">
+                    <label for="email" style="display: block; text-align: center; margin-bottom: 0.5rem; color: #374151;">Email</label>
+                    <input
+                        id="email"
+                        type="email"
+                        name="email"
+                        value="{{ old('email') }}"
+                        required
+                        autofocus
+                        style="
+                            width: 100%;
+                            padding: 0.5rem;
+                            border: 1px solid #D1D5DB;
+                            border-radius: 0.375rem;
+                            text-align: center;
+                        "
+                    >
                 </div>
 
                 <!-- Submit Button -->
-                <div class="flex justify-center">
-                    <x-button class="px-6 py-2 text-sm">
+                <div style="text-align: center;">
+                    <button type="submit" style="
+                        background-color: #1D4ED8;
+                        color: white;
+                        padding: 0.5rem 1.5rem;
+                        font-size: 0.875rem;
+                        border: none;
+                        border-radius: 0.375rem;
+                        cursor: pointer;
+                    ">
                         {{ __('Send Reset Link') }}
-                    </x-button>
+                    </button>
                 </div>
             </form>
         </div>

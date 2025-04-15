@@ -25,8 +25,7 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
-
-    
+        'id_role',
     ];
 
     /**
@@ -47,4 +46,10 @@ class User extends Authenticatable
     protected $casts = [
         'email_verified_at' => 'datetime',
     ];
+
+    public function nhanVien()
+    {
+        return $this->hasOne(NhanVien::class, 'FK_ID_user', 'id');
+    }
+    
 }

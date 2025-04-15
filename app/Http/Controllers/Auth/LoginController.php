@@ -11,9 +11,6 @@ use Illuminate\Support\Facades\Admin;
 
 
 
-
-
-
 class LoginController extends Controller
 {
    
@@ -32,21 +29,13 @@ class LoginController extends Controller
 
             $request->session()->regenerate(); // Ngăn chặn CSRF
             $user = Auth::user();
-            dd($user);
-            
-            if ($user->id_role ==3){
-
-            $request->session()->regenerate(); // Ngăn chặn CSRf
-
-      
-
           
-            if (in_array($user->id_role, [1, 3])){
+            
 
+            if ($user->FK_ID_vai_tro ==1 || $user->FK_ID_vai_tro == 3) {
                 return redirect()->route('admin.quanly');
-            } else {
-                return redirect()->route('home');
-            }
+            } else return redirect()->route('trangchu');
+            
 
         }
         return back()->withErrors([

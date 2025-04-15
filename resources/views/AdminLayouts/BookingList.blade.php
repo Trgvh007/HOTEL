@@ -1,22 +1,27 @@
- <!-- Kiểm tra và hiển thị thông báo thành công -->
+
+
 
     <!-- Kiểm tra và hiển thị lỗi -->
     @if ($errors->any())
-        <div style="color:red; margin:0 auto;">
-            <div>{{ __('Whoops! Something went wrong.') }}</div>
-            <ul>
-                @foreach ($errors->all() as $error)
-                    <li>{{ $error }}</li>
-                @endforeach
-            </ul>
-        </div>
-    @endif
+    <script>
+        let errorMessages = {!! json_encode($errors->all()) !!};
+        alert("Đã xảy ra lỗi:\n\n" + errorMessages.join("\n"));
+    </script>
+@endif
+
 
     @if (session('status'))
     <script>
         alert("{{ session('status') }}");
     </script>
 @endif
+
+@if (session('success'))
+    <script>
+        alert("{{ session('success') }}");
+    </script>
+@endif
+
 <x-Admin_Layout>
 <x-slot name='title'>
 Danh Sách Đặt Phòng
@@ -28,7 +33,10 @@ Danh Sách Đặt Phòng
             <h2>Danh sách đặt phòng</h2>
             <div>
                 <a href="#">Chuyển ca</a>
-                <a href="#">Thoát</a>
+                <a href="#" onclick="logoutWithConfirm()">Thoát</a>
+                <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
+    @csrf
+</form>
             </div>
         </div>
         <div class="filter-section">
@@ -79,7 +87,8 @@ Danh Sách Đặt Phòng
                     <td>{{ $checkin->ngay_dat }}</td>
                     <td>
                         @if($checkin->checkindate >= date('Y-m-d'))
-                            <a href="{{route('booking.edit', ['id' => $checkin->ma_booking, 'room' => $checkin->phong]) }}" class='edit'>✏️</a>
+                        <a href="javascript:void(0);" onclick="openPhieuPhong('{{ $checkin->ma_booking }}', '{{ $checkin->phong }}')" class="edit">✏️</a>
+
                         @endif
                         <a href="#" onclick="deleteBooking('{{ $checkin->ma_booking  }}', '{{  $checkin->phong}}', this)" class='delete'>❌</a>
                     </td>
@@ -94,4 +103,43 @@ Danh Sách Đặt Phòng
             <button onclick="printTable()" class="btn btn-primary">Print</button>
             <button style = "background: blue; color:#fff";  class="btn btn-primary"> ✅ Nhận phòng </button>
           </div>
+          <div id="overlay-background"
+     onclick="closePhieuPhong()"
+     style="display:none; position:fixed; top:0; left:0; width:100%; height:100%;
+            background:rgba(0,0,0,0.6); z-index:999;"></div>
+
+<div id="phieu-phong-overlay"
+     style="display:none; position:fixed; top:50%; left:50%; transform:translate(-50%, -50%);
+            background:white; padding:0; border-radius:10px; z-index:1000;
+             max-width: 950px;  max-height: 90vh; overflow-y: auto; width: 90vw; height: auto;">
+</div>
+
+<script>
+function openPhieuPhong(bookingId, roomNumber) {
+    fetch(`/booking/edit-ajax/${bookingId}/${roomNumber}`)
+        .then(res => res.text())
+        .then(html => {
+            document.getElementById('phieu-phong-overlay').innerHTML = html;
+            document.getElementById('overlay-background').style.display = 'block';
+            document.getElementById('phieu-phong-overlay').style.display = 'block';
+        });
+}
+
+function closePhieuPhong() {
+    document.getElementById('overlay-background').style.display = 'none';
+    document.getElementById('phieu-phong-overlay').style.display = 'none';
+}
+
+
+function logoutWithConfirm() {
+        if (confirm('Bạn có chắc chắn muốn đăng xuất không?')) {
+            document.getElementById('logout-form').submit();
+        }
+    }
+
+
+    
+</script>
+
+
 </x-Admin_Layout>

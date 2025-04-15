@@ -1,43 +1,46 @@
 <x-Home_header>
     <x-slot name="title">VỤ NỔ LỚN HOTEL</x-slot>
-</x-Home_header>
+
     <!-- Hero Section -->
-   <section class="hero-section" style="background-image: url('{{ asset('Cusimage/home.png') }}'); background-size: cover; background-position: center;">
+   <section class="hero-section" style="background-image: url('{{ asset('Cusimage/VNL.jpg') }}'); background-size: cover; background-position: center;">
   
         <div class="container">
             <div class="hero-content">
                 <div class="search-form">
-                    <form action="{{ route('search') }}" method="GET" onsubmit="return validateDates()">
-                        <div class="form-group">
-                            <label for="ngayden">Ngày đến:</label>
-                            <input type="text" 
-                                   id="ngayden" 
-                                   name="ngayden" 
-                                   placeholder="mm/dd/yyyy"
-                                   onfocus="(this.type='date')" 
-                                   onblur="if(!this.value)this.type='text'"
-                                   required>
-                        </div>
-                        <div class="form-group">
-                            <label for="ngaydi">Ngày đi:</label>
-                            <input type="text" 
-                                   id="ngaydi" 
-                                   name="ngaydi" 
-                                   placeholder="mm/dd/yyyy"
-                                   onfocus="(this.type='date')" 
-                                   onblur="if(!this.value)this.type='text'"
-                                   required>
-                        </div>
-                        <div class="form-group">
-                            <label for="sophong">Số phòng:</label>
-                            <input type="text" 
-                                   id="sophong" 
-                                   name="sophong" 
-                                   placeholder="Nhập số phòng"
-                                   required>
-                        </div>
-                        <button type="submit" class="search-btn">Tìm kiếm</button>
-                    </form>
+                <form action="{{ route('search1') }}" method="POST" onsubmit="return validateDates()">
+                @csrf
+                <div class="form-group">
+                    <label for="checkin">Ngày đến:</label>
+                    <input type="text" 
+                        id="checkin" 
+                        name="checkin" 
+                        placeholder="mm/dd/yyyy"
+                        onfocus="(this.type='date')" 
+                        onblur="if(!this.value)this.type='text'"
+                        required>
+                </div>
+                <div class="form-group">
+                    <label for="checkout">Ngày đi:</label>
+                    <input type="text" 
+                        id="checkout" 
+                        name="checkout" 
+                        placeholder="mm/dd/yyyy"
+                        onfocus="(this.type='date')" 
+                        onblur="if(!this.value)this.type='text'"
+                        required>
+                </div>
+                <div class="form-group">
+                    <label for="rooms">Số phòng:</label>
+                    <input type="number" 
+                        id="rooms" 
+                        name="rooms" 
+                        placeholder="Nhập số phòng"
+                        required>
+                        
+                </div>
+                <button type="submit" class="search-btn">Tìm kiếm</button>
+</form>
+
                 </div>
             </div>
         </div>
@@ -169,65 +172,40 @@
         </div>
     </section>
 
-    <!-- Footer -->
-    <footer class="bg-dark text-white py-4 mt-5">
-        <div class="container">
-            <div class="row">
-                <div class="col-md-4">
-                    <h4>BẠN CẦN GIÚP ĐỠ?</h4>
-                    <ul class="list-unstyled">
-                        <li><a href="#" class="text-white">Quản lý đặt chỗ của bạn</a></li>
-                        <li><a href="#" class="text-white">Hỗ trợ</a></li>
-                        <li><a href="#" class="text-white">Bán chạy nhất</a></li>
-                    </ul>
-                </div>
-                <div class="col-md-4 text-center">
-                    <img src="{{ asset('Cusimage/logo1.png') }}" alt="VNL Hotel" class="img-fluid" style="max-width: 200px;">
-                    <div class="social-icons mt-3">
-                        <a href="#" class="text-white mx-2"><i class="fab fa-facebook-f"></i></a>
-                        <a href="#" class="text-white mx-2"><i class="fab fa-instagram"></i></a>
-                        <a href="#" class="text-white mx-2"><i class="fab fa-youtube"></i></a>
-                    </div>
-                </div>
-                <div class="col-md-4">
-                    <h4>ĐIỀU KHOẢN & QUY ĐỊNH</h4>
-                    <ul class="list-unstyled">
-                        <li><a href="#" class="text-white">Điều khoản chung</a></li>
-                        <li><a href="#" class="text-white">Quy định chung</a></li>
-                        <li><a href="#" class="text-white">Quy định về thanh toán</a></li>
-                        <li><a href="#" class="text-white">Chính sách giải quyết tranh chấp</a></li>
-                    </ul>
-                </div>
-            </div>
-            <div class="row mt-4">
-                <div class="col-12 text-center">
-                    <p class="mb-0">© 2023 VNL Hotel. All Rights Reserved.</p>
-                </div>
-            </div>
-        </div>
-    </footer>
-
-    <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
     <script>
     function validateDates() {
-        const ngayDi = new Date(document.getElementById('ngaydi').value);
-        const ngayDen = new Date(document.getElementById('ngayden').value);
+        const checkinInput = document.getElementById("checkin").value;
+        const checkoutInput = document.getElementById("checkout").value;
+        const roomsInput = parseInt(document.getElementById("rooms").value);
+
         const today = new Date();
-        today.setHours(0, 0, 0, 0);
+        today.setHours(0, 0, 0, 0); // bỏ giờ để so sánh chính xác ngày
 
-        if (ngayDi < today) {
-            alert("Ngày đi không hợp lệ");
+        const checkinDate = new Date(checkinInput);
+        const checkoutDate = new Date(checkoutInput);
+
+        // Kiểm tra ngày đến > hôm nay
+        if (checkinDate <= today) {
+            alert("Ngày đến phải lớn hơn ngày hiện tại.");
             return false;
         }
 
-        if (ngayDi <= ngayDen) {
-            alert("Ngày đi phải lớn hơn ngày đến");
+        // Kiểm tra ngày đi > ngày đến
+        if (checkoutDate <= checkinDate) {
+            alert("Ngày đi phải lớn hơn ngày đến.");
             return false;
         }
-        return true;
+
+        // Kiểm tra số phòng > 0
+        if (isNaN(roomsInput) || roomsInput <= 0) {
+            alert("Số phòng phải lớn hơn 0.");
+            return false;
+        }
+
+        return true; // tất cả điều kiện hợp lệ
     }
-    </script>
+</script>
+
 </body>
 </html> 
+</x-Home_header>

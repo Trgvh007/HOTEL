@@ -8,6 +8,30 @@
     <link rel="stylesheet" href="./css/qlystyle.css">
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
+    <style>
+     .avatar-wrapper {
+        position: relative;
+        display: inline-block;
+    }
+
+    .avatar-wrapper img {
+        width: 80px;
+        height: 80px;
+        border-radius: 50%;
+    }
+
+    .status-indicator {
+        position: absolute;
+        bottom: 5px;
+        right: 5px;
+        width: 15px;
+        height: 15px;
+        background-color: #28a745; /* màu xanh lá cây */
+        border: 2px solid white;
+        border-radius: 50%;
+    }
+    
+    </style>
 </head>
 <body>
 
@@ -17,16 +41,20 @@
         </div>
         
             <div class="user-info">
-            <?php
-       if (isset($_SESSION["Ho_ten"])) { 
-    
-        $avatar = ($_SESSION['gioi_tinh'] == 'Nam') ? './image/avanam.png' : './image/aviiia.png'; // Chọn avatar
-     ?>
-     <img src="<?php echo $avatar; ?>" alt="User Image"><br>
-     <span> <?php  echo $_SESSION['Ho_ten'] . '</span>';
-    }
- ?>
-        </div>
+            @auth
+            @php
+                $nhanVien = Auth::user()->nhanVien;
+                $gender = $nhanVien->Gioi_tinh ?? 'Nam';
+                $avatar = $gender === 'Nam' ? asset('Adimage/avanam.png') : asset('Adimage/aviiia.png');
+            @endphp
+            <div class="avatar-wrapper mb-2">
+            <img src="{{ $avatar }}" alt="User Image"><br>
+            <span class="status-indicator"></span>
+</div>
+            <div class="font-weight-bold" style="font-size: 1.1rem;">{{$nhanVien->Ho_ten }}</div> <br>
+            <div style="font-size: 1rem; color: #f5f5dc; font-style: italic;"><b>({{$nhanVien->Chuc_vu }})</b></div>
+        @endauth
+    </div>
 
         <ul class="menu">
             
@@ -54,6 +82,8 @@
             <li><a href="#">Chính sách</a></li>
         </ul>
     </div>
+
+    
     {{$slot}}
 </body>
 </html>
@@ -109,54 +139,82 @@
         options.style.display = (options.style.display === "none") ? "block" : "none";
     }
 
-     // Hiển thị menu ngữ cảnh khi nhấp vào phòng bằng chuột trái
-     document.querySelectorAll('.room').forEach(function(room) {
-        room.addEventListener('click', function(event) {
-            const contextMenu = document.getElementById('context-menu');
-            const roomClass = room.classList[1]; // Lớp thứ hai của phòng (trạng thái)
+    document.querySelectorAll('.room').forEach(function(room) {
+    room.addEventListener('click', function(event) {
+        const contextMenu = document.getElementById('context-menu');
+        const roomClass = room.classList[1]; // Lớp thứ hai của phòng (trạng thái)
+        const roomId = room.getAttribute('data-room-id'); // Lấy ID phòng từ data-room-id
 
-            // Lưu ID phòng vào menu ngữ cảnh
-            contextMenu.setAttribute('data-room-id', room.getAttribute('data-room-id'));
+        // Xóa tất cả các nút cũ trong menu
+        contextMenu.innerHTML = '';
 
-            // Xóa tất cả các nút hiện có trong menu
-            contextMenu.innerHTML = '';
+        // Lưu ID phòng vào menu ngữ cảnh
+        contextMenu.setAttribute('data-room-id', roomId);
 
-            // Kiểm tra phòng màu xanh lá cây và màu vàng
-            if (roomClass === 'trong' || roomClass === 'dat-truoc') { // Màu xanh lá cây hoặc vàng
-                            contextMenu.innerHTML += '<button onclick="nhanPhong()">Nhận phòng</button> <br>';
-                            contextMenu.innerHTML += '<button onclick="datPhong()">Đặt phòng trước</button> <br>';
-                        }
+        // Kiểm tra phòng màu xanh lá cây và màu vàng
+        if (roomClass === 'trong' || roomClass === 'dat-truoc') { // Màu xanh lá cây hoặc vàng
+            let buttonNhanPhong = document.createElement('button');
+            buttonNhanPhong.textContent = 'Nhận phòng';
+            buttonNhanPhong.addEventListener('click', function() {
+                openPhieuNhanPhong(roomId);  // Gọi hàm nhận phòng
+            });
+            contextMenu.appendChild(buttonNhanPhong);
 
-
-            // Hiển thị menu dựa trên trạng thái phòng
-            if (roomClass === 'da-nhan') { // Màu đỏ
-                contextMenu.innerHTML += '<button onclick="traPhong()">Trả phòng</button>';
-            }
-            contextMenu.innerHTML += '<button onclick="capNhatTrangThai()">Cập nhật trạng thái</button>';
-            contextMenu.innerHTML += '<button onclick="xoaPhong()">Xóa phòng</button>';
-            
-            // Đặt vị trí cho menu ngữ cảnh
-            contextMenu.style.top = event.pageY + 'px';
-            contextMenu.style.left = event.pageX + 'px';
-            contextMenu.style.display = 'block'; // Hiển thị menu
-        });
-    });
-
-    // Ẩn menu khi nhấp ra ngoài
-    document.addEventListener('click', function(event) {
-        if (!event.target.closest('#context-menu') && !event.target.closest('.room')) {
-            document.getElementById('context-menu').style.display = 'none'; // Ẩn menu
+            let buttonDatPhong = document.createElement('button');
+            buttonDatPhong.textContent = 'Đặt phòng trước';
+            buttonDatPhong.addEventListener('click', function() {
+                datPhong();  // Gọi hàm đặt phòng trước
+            });
+            contextMenu.appendChild(buttonDatPhong);
         }
-    });
 
-    // Các hàm xử lý cho các hành động
+        // Hiển thị menu dựa trên trạng thái phòng
+        if (roomClass === 'da-nhan') { // Màu đỏ
+            let buttonTraPhong = document.createElement('button');
+            buttonTraPhong.textContent = 'Trả phòng';
+            buttonTraPhong.addEventListener('click', function() {
+                traPhong();  // Gọi hàm trả phòng
+            });
+            contextMenu.appendChild(buttonTraPhong);
+        }
+
+        let buttonCapNhat = document.createElement('button');
+        buttonCapNhat.textContent = 'Cập nhật trạng thái';
+        buttonCapNhat.addEventListener('click', function() {
+            capNhatTrangThai();  // Gọi hàm cập nhật trạng thái
+        });
+        contextMenu.appendChild(buttonCapNhat);
+
+        let buttonXoaPhong = document.createElement('button');
+        buttonXoaPhong.textContent = 'Xóa phòng';
+        buttonXoaPhong.addEventListener('click', function() {
+            xoaPhong();  // Gọi hàm xóa phòng
+        });
+        contextMenu.appendChild(buttonXoaPhong);
+
+        // Đặt vị trí cho menu ngữ cảnh
+        contextMenu.style.top = event.pageY + 'px';
+        contextMenu.style.left = event.pageX + 'px';
+        contextMenu.style.display = 'block'; // Hiển thị menu
+    });
+});
+
+// Ẩn menu khi nhấp ra ngoài
+document.addEventListener('click', function(event) {
+    if (!event.target.closest('#context-menu') && !event.target.closest('.room')) {
+        document.getElementById('context-menu').style.display = 'none'; // Ẩn menu
+    }
+});
+
+
+    /* Các hàm xử lý cho các hành động
     function nhanPhong() {
        
         const roomId = document.getElementById('context-menu').getAttribute('data-room-id');
-    const url = "{{ url('phieunhanphong') }}/" + roomId; // Correct URL format
-    
-    window.location.href = url;
+       
+        openPhieuNhanPhong('create', roomId);
     }
+        */
     function datPhong() {
         const roomId = document.getElementById('context-menu').getAttribute('data-room-id');
         window.location.href = "dat_phong.php?room_id" + roomId; // Chuyển hướng tới trang dat_phong.php

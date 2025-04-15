@@ -8,6 +8,10 @@ use Illuminate\Support\Facades\Log;
 
 class HomeController extends Controller
 {
+    function trangchu()
+    {
+    return view("home");
+    }
     public function index()
     {
         try {

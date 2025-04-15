@@ -1,12 +1,16 @@
 <x-Admin_Layout>
 <x-slot name='title'>Quản lý Khách sạn</x-slot>
 
+
 <div class="content">
         <div class="header">
             <h2>Sơ đồ khách sạn</h2>
             <div>
                 <a href="#">Chuyển ca</a>
-                <a href="#">Thoát</a>
+                <a href="#" onclick="logoutWithConfirm()">Thoát</a>
+                <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
+    @csrf
+</form>
             </div>
         </div>
         <h1>Sơ đồ khách sạn</h1>
@@ -105,14 +109,108 @@
         
 
         <div id="context-menu">
-        <button onclick="nhanPhong()">Nhận phòng</button>
+        <button onclick=" openPhieuNhanPhong({{ $room->so_phong }})">Nhận phòng</button>
             <button onclick="datPhong()">Đặt phòng trước</button> 
             <button onclick="capNhatTrangThai()">Cập nhật trạng thái</button> 
             <button onclick="xoaPhong()">Xóa phòng</button>
     </div>
         </div>
    
-       
-    
 
+        <div id="overlay-background"
+     onclick="closePhieuPhong()"
+     style="display:none; position:fixed; top:0; left:0; width:100%; height:100%;
+            background:rgba(0,0,0,0.6); z-index:999;"></div>
+
+<div id="phieu-phong-overlay"
+     style="display:none; position:fixed; top:50%; left:50%; transform:translate(-50%, -50%);
+            background:white; padding:0; border-radius:10px; z-index:1000;
+             max-width: 950px;  max-height: 90vh; overflow-y: auto; width: 90vw; height: auto;">
+</div>
+
+
+
+    
 </x-Admin_Layouts>
+@if (session('status'))
+    <div id="toast-success" class="custom-toast success auto-hide">
+        <span class="icon">✅</span>
+        <span>{{ session('status') }}</span>
+        <button class="close-btn" onclick="this.parentElement.remove()">×</button>
+    </div>
+@endif
+
+<style>
+    .custom-toast {
+        position: fixed;
+        top: 20px;
+        left: 50%;
+        transform: translateX(-50%);
+        padding: 16px 24px;
+        border-radius: 10px;
+        font-size: 16px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+        color: white;
+        z-index: 9999;
+        animation: fadeInOut 4s ease-in-out forwards;
+    }
+
+    .custom-toast.success {
+        background-color: #28a745;
+    }
+
+    .custom-toast .icon {
+        font-size: 20px;
+    }
+
+    .custom-toast .close-btn {
+        background: transparent;
+        border: none;
+        font-size: 20px;
+        color: white;
+        cursor: pointer;
+        margin-left: auto;
+    }
+
+    @keyframes fadeInOut {
+        0% { opacity: 0; transform: translate(-50%, -20px); }
+        10% { opacity: 1; transform: translate(-50%, 0); }
+        90% { opacity: 1; transform: translate(-50%, 0); }
+        100% { opacity: 0; transform: translate(-50%, -20px); }
+    }
+</style>
+
+<script>
+    setTimeout(() => {
+        document.querySelectorAll('.auto-hide').forEach(el => el.remove());
+    }, 5000);
+
+
+    function logoutWithConfirm() {
+        if (confirm('Bạn có chắc chắn muốn đăng xuất không?')) {
+            document.getElementById('logout-form').submit();
+        }
+    }
+
+
+    function openPhieuNhanPhong(roomId) {
+        console.log('Room ID:', roomId);
+    fetch(`/phieunhanphong/${roomId}`)
+        .then(res => res.text())
+        .then(html => {
+            document.getElementById('phieu-phong-overlay').innerHTML = html;
+            document.getElementById('overlay-background').style.display = 'block';
+            document.getElementById('phieu-phong-overlay').style.display = 'block';
+        })
+        .catch(error => console.error('Error fetching the form:', error));
+}
+
+function closePhieuPhong() {
+    document.getElementById('overlay-background').style.display = 'none';
+    document.getElementById('phieu-phong-overlay').style.display = 'none';
+}
+
+</script>

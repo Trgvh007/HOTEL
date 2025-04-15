@@ -10,6 +10,8 @@ use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Log;
 use Carbon\Carbon;
+use Exception;
+
 
 class BookingController extends Controller
 {
@@ -42,7 +44,7 @@ class BookingController extends Controller
 }
 
   //Hiển thị form chỉnh sửa
-  public function editBooking($id, $room)
+  public function editAjax($id, $room)
   {
       // Lấy thông tin đặt phòng từ các bảng liên quan
     $booking = DB::table('dat_phong as d')
@@ -169,9 +171,9 @@ public function updateBooking($id, Request $request)
                 'ngay_thanh_toan' => Carbon::now(),
             ]);
         DB::commit();  // Lưu các thay đổi
-       // return redirect()->route('booking.list')->with('status', 'Cập nhật thành công!');
+       return redirect()->route('booking.list')->with('status', 'Cập nhật thành công!');
 
-       return Redirect::route('booking.list')->with('status', 'Cập nhật thành công!');
+       //return Redirect::route('booking.list')->with('status', 'Cập nhật thành công!');
     } catch (\Exception $e) {
         DB::rollBack();  // Hủy các thay đổi nếu có lỗi
         return Redirect::back()->withErrors(['error' => 'Cập nhật thất bại: ' . $e->getMessage()]);
@@ -189,25 +191,25 @@ public function updateBooking($id, Request $request)
             'checkout' => 'required|date|after:checkin',
             'room_id' => 'required|exists:phong,so_phong',
             'cccd' => 'required|string|max:20',
-            'ho_ten' => 'required|string|max:100',
-            'birthday' => 'required|date',
+            'name' => 'required|string|max:100',
+            'dob' => 'required|date',
             'phone' => 'required|string|max:15',
             'address' => 'required|string|max:255',
             'email' => 'required|email|max:255',
             'country' => 'required|string|max:50',
             'gender' => 'required|string|max:10',
             'company' => 'nullable|string|max:100',
-            'prepay' => 'nullable|numeric',
+            'prepaid' => 'nullable|numeric',
             'discount' => 'nullable|numeric',
-            'note' => 'nullable|string|max:255',
-            'cash' => 'required|numeric',
+            'notes' => 'nullable|string|max:255',
+            'payment_method' => 'required|string|max:50',
         ]);
 
         // Lấy dữ liệu từ form
         $room_id = $request->input('room_id');
-        $checkin = $request->input('checkin');
+        //$checkin = $request->input('checkin');
         $checkout = $request->input('checkout');
-        $time_checkin = $request->input('time_checkin');
+        //$time_checkin = $request->input('time_checkin');
         $time_checkout = $request->input('time_checkout');
         $cty_group = $request->input('company');
         $tra_truoc = $request->input('prepaid');
@@ -225,7 +227,7 @@ public function updateBooking($id, Request $request)
         $gioi_tinh = $request->input('gender');
 
         // Kết hợp ngày và giờ cho checkin và checkout
-        $checkin_datetime = $checkin . ' ' . $time_checkin;
+        $checkin_datetime = now();
         $checkout_datetime = $checkout . ' ' . $time_checkout;
 
         DB::beginTransaction(); // Bắt đầu transaction
@@ -264,7 +266,7 @@ public function updateBooking($id, Request $request)
             DB::table('ct_dat_phong')->insert([
                 'FK_ID_Booking' => $booking_id,
                 'FK_so_phong' => $room_id,
-                'checkindate' => $checkin_datetime,
+                'checkindate' => now(),
                 'checkoutdate' => $checkout_datetime,
                 'don_gia' => $don_gia,
             ]);
@@ -272,32 +274,56 @@ public function updateBooking($id, Request $request)
             // Cập nhật trạng thái phòng
             DB::table('phong')->where('so_phong', $room_id)->update(['trang_thai' => 'Đã nhận']);
 
-            // Tính tổng tiền
-            $total = $don_gia; // Tính tổng tiền (theo đơn giá phòng)
+           
+        // 4.4 Lấy tổng tiền từ bảng ct_dat_phong đã tính sẵn
+$total = DB::table('ct_dat_phong')
+->where('FK_ID_Booking', $booking_id)
+->value('thanh_tien'); // Tính tổng tiền (theo đơn giá phòng)
 
             // Thêm hóa đơn
-            if (Session::has('ma_nv')) {
-                //$nv = Session::get('ma_nv');
+            $user = auth()->user();
+            if ($user && $user->nhanVien) {
+                // Lấy Ma_NV từ bảng nhan_vien thông qua mối quan hệ đã định nghĩa trong mô hình User
+                $nv = $user->nhanVien->Ma_NV; 
+            
                 DB::table('hoa_don')->insert([
                     'FK_ID_Booking' => $booking_id,
                     'tong_tien' => $total,
                     'phuong_thuc' => $pay,
-                    //'FK_Ma_NV' => $nv,
+                    'FK_Ma_NV' => $nv,
                     'ngay_thanh_toan' => now(),
+                    'trang_thai' => "Đã thanh toán"
                 ]);
             } else {
-               // throw new Exception("Không có thông tin nhân viên.");
+                throw new Exception("Không có thông tin nhân viên.");
            }
 
             DB::commit(); // Commit giao dịch
 
-            return redirect()->route('booking.list')->with('status', 'Nhận phòng thành công!');
+            return redirect()->route('admin.quanly')->with('status', 'Nhận phòng thành công!');
 
         } catch (Exception $e) {
             DB::rollback(); // Rollback nếu có lỗi
-            return back()->with('error', 'Lỗi khi xử lý: ' . $e->getMessage());
-        }
+           // Lấy mã lỗi SQL
+    $sqlErrorCode = $e->errorInfo[1];
+
+    // Gợi ý lỗi phổ biến
+    $errorMessage = 'Lỗi khi xử lý đặt phòng.';
+
+    if ($sqlErrorCode == 1062) {
+        // 1062 là lỗi Duplicate entry (MySQL)
+        $errorMessage = 'Dữ liệu đã tồn tại. Có thể CCCD, email hoặc số điện thoại bị trùng.';
+    } elseif ($sqlErrorCode == 1452) {
+        // 1452 là lỗi foreign key constraint fails
+        $errorMessage = 'Ràng buộc dữ liệu không đúng. Có thể ID phòng hoặc khách hàng không tồn tại.';
     }
+
+    return back()->with('error', $errorMessage);
+} catch (Exception $e) {
+    DB::rollback();
+    return back()->with('error', 'Lỗi không xác định: ' . $e->getMessage());
+    }
+}
         //hiển thị form nhận phòng
     public function createBooking($room_id)
 {
@@ -314,6 +340,7 @@ public function updateBooking($id, Request $request)
     return view('AdminLayouts.Phieuphong', [
         'roomDetails' => $roomDetails,
         'booking' => null,
+        'now' => now(),
         'action' => 'create'
     ]);
 }
@@ -395,7 +422,7 @@ public function showTransferForm($room)
     }
     
     
-
+//
     public function submitTransfer(Request $request)
     {
         $request->validate([
@@ -417,6 +444,10 @@ public function showTransferForm($room)
                 ->where('so_phong', $newRoom)
                 ->update(['trang_thai' => 'Đặt trước', 'ngay_cap_nhat' => now()]);
 
+            DB::table('phong')
+                ->where('so_phong', $oldRoom)
+                ->update(['trang_thai' => 'Trống', 'ngay_cap_nhat' => now()]);
+
             DB::commit();
 
 
@@ -427,8 +458,7 @@ public function showTransferForm($room)
         }
     }
 
-
-
+//customer 
     public function confirm(Request $request)
     {
         // Get booking data from session
@@ -548,5 +578,5 @@ public function showTransferForm($room)
             return back()->with('error', 'Có lỗi xảy ra khi đặt phòng. Vui lòng thử lại.');
         }
     }
+   
 }
-

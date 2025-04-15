@@ -9,6 +9,7 @@
     <x-slot name='title'> Chuyển phòng</x-slot> 
   
 <div class="container">
+  
     <div class="header">Chuyển phòng - R.{{ $oldRoom }}</div>
 
     <div class="content">

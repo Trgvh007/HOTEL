@@ -5,7 +5,9 @@ namespace App\Http\Middleware;
 use Closure;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+
 use Illuminate\Support\Facades\Admin;
+
 class AdminMiddleware
 {
     /**
@@ -17,21 +19,25 @@ class AdminMiddleware
      */
   
 
-    public function handle(Request $request, Closure $next)
-    {
-    
 
-        if (Auth::check()) {
-            $user = Auth::user();
-            \Log::info('Middleware chạy - User: ', ['id' => $user->id, 'role' => $user->id_role]);
+     public function handle(Request $request, Closure $next, $role)
+     {
+     
+         if (!Auth::check()) {
+             return redirect()->route('login');
+         }
+ 
+         $id = Auth::user()->FK_ID_vai_tro;
+ 
+         // Xử lý nhiều role, ví dụ: '1|3'
+         $allowedRoles = explode('|', $role);
+         if (!in_array($id, $allowedRoles)) {
            
-            // Kiểm tra vai trò của user
-            if ($user->id_role == 3) {
-                return $next($request);
-            }
-        }
+             return redirect('/')->with('error', 'Bạn không có quyền truy cập vào trang này!');
+         }
+ 
+         return $next($request);
+     }
 
-        // Nếu không có quyền, chuyển về trang chủ
-       return redirect()->route('home');
-    }
+   
 }
