@@ -17,7 +17,7 @@
     <span style="font-size: 24px; font-weight: bold;">
         {{ $action == 'edit' ? "Chỉnh sửa đặt phòng - R{$roomDetails->so_phong}" : "Phiếu nhận phòng {$roomDetails->so_phong}" }}
                 @if($action == 'edit')
-                <a href="{{ route('chuyen-phong', ['room' => $roomDetails->so_phong]) }}" class="edit" onclick="openTransferModal(event)">✏️</a> - [{{ $booking->ID_Booking ?? '' }}]
+                <a href="{{ route('chuyen-phong', ['room' => $roomDetails->so_phong]) }}" class="edit" onclick="openTransferModal(event)">✏️</a>- [{{ $booking->ID_Booking ?? '' }}]
                 @endif
             </span>
 </div>
@@ -63,12 +63,7 @@
         </div>
     </div>
 
-    <div class="section">
-        <label class="add-service">Thêm dịch vụ</label>
-        <select id="add-service" name="add_service">
-            <!-- Option sẽ được thêm vào đây -->
-        </select>
-    </div>
+    
 
     <div class="section">
         <div class="section-title">Thông tin khách hàng</div>
@@ -129,21 +124,27 @@
                 </div>
                 <div class="buttons">
                 @if($action == 'edit')
-                    <button type="button" class="cancel" onclick="goBack()">Cancel</button>
+                <button type="button" class="cancel" onclick="window.location.href=this.dataset.url" data-url="{{ route('booking.list') }}">Cancel</button>
                     <button type="submit" class="confirm">✅ Cập nhật</button>
                 @else
-                    <button type="button" class="cancel" onclick="goBack()">Hủy</button>
+                <button type="button" class="cancel" onclick="window.location.href=this.dataset.url" data-url="{{ route('admin.quanly') }}">Hủy</button>
                     <button type="submit" class="confirm">✅ Nhận phòng</button>
                 @endif
             </form>
             </div>
-<<<<<<< HEAD
-            </div>
-            </div>
-
-           
-            </x-phieuphong>
-=======
           
             </x-phieuphong>
->>>>>>> Cus_Booking_RoomDetail_Filter(Ad)
+
+<script>
+            function openTransferModal(roomNumber, bookingId) {
+    document.getElementById('old-room').value = roomNumber;
+    document.getElementById('booking-id').value = bookingId;
+    document.getElementById('room-label').textContent = roomNumber;
+    document.getElementById('chuyenPhongOverlay').style.display = 'flex';
+}
+
+function closeChuyenPhong() {
+    document.getElementById('chuyenPhongOverlay').style.display = 'none';
+}
+
+</script>

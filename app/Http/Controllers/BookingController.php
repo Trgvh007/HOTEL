@@ -44,7 +44,7 @@ class BookingController extends Controller
 }
 
   //Hiển thị form chỉnh sửa
-  public function editBooking($id, $room)
+  public function editAjax($id, $room)
   {
       // Lấy thông tin đặt phòng từ các bảng liên quan
     $booking = DB::table('dat_phong as d')
@@ -171,9 +171,9 @@ public function updateBooking($id, Request $request)
                 'ngay_thanh_toan' => Carbon::now(),
             ]);
         DB::commit();  // Lưu các thay đổi
-       // return redirect()->route('booking.list')->with('status', 'Cập nhật thành công!');
+       return redirect()->route('booking.list')->with('status', 'Cập nhật thành công!');
 
-       return Redirect::route('booking.list')->with('status', 'Cập nhật thành công!');
+       //return Redirect::route('booking.list')->with('status', 'Cập nhật thành công!');
     } catch (\Exception $e) {
         DB::rollBack();  // Hủy các thay đổi nếu có lỗi
         return Redirect::back()->withErrors(['error' => 'Cập nhật thất bại: ' . $e->getMessage()]);
@@ -274,8 +274,11 @@ public function updateBooking($id, Request $request)
             // Cập nhật trạng thái phòng
             DB::table('phong')->where('so_phong', $room_id)->update(['trang_thai' => 'Đã nhận']);
 
-            // Tính tổng tiền
-            $total = $don_gia; // Tính tổng tiền (theo đơn giá phòng)
+           
+        // 4.4 Lấy tổng tiền từ bảng ct_dat_phong đã tính sẵn
+$total = DB::table('ct_dat_phong')
+->where('FK_ID_Booking', $booking_id)
+->value('thanh_tien'); // Tính tổng tiền (theo đơn giá phòng)
 
             // Thêm hóa đơn
             $user = auth()->user();
@@ -419,7 +422,7 @@ public function showTransferForm($room)
     }
     
     
-
+//
     public function submitTransfer(Request $request)
     {
         $request->validate([
@@ -440,6 +443,10 @@ public function showTransferForm($room)
             DB::table('phong')
                 ->where('so_phong', $newRoom)
                 ->update(['trang_thai' => 'Đặt trước', 'ngay_cap_nhat' => now()]);
+
+            DB::table('phong')
+                ->where('so_phong', $oldRoom)
+                ->update(['trang_thai' => 'Trống', 'ngay_cap_nhat' => now()]);
 
             DB::commit();
 
@@ -571,21 +578,5 @@ public function showTransferForm($room)
             return back()->with('error', 'Có lỗi xảy ra khi đặt phòng. Vui lòng thử lại.');
         }
     }
-<<<<<<< HEAD
    
-    
-
-    
-}
-=======
-    public function editAjax($id, $room)
-    {
-        $booking = DB::table('dat_phong')->where('ID_Booking', $id)->first();
-        $roomDetails = DB::table('phong')->where('so_phong', $room)->first();
-    
-        return view('AdminLayouts.Phieuphong', compact('booking', 'roomDetails'))->with('action', 'edit');
-    }
-    
->>>>>>> Cus_Booking_RoomDetail_Filter(Ad)
-
 }

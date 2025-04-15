@@ -47,7 +47,9 @@ Route::middleware(['admin:1|3'])->group(function () {
 
     Route::get('/BookingList', [BookingController::class, 'getBookings'])->name('booking.list');
     Route::post('booking/update/{id}', [BookingController::class, 'updateBooking'])->name('booking.update');
-    Route::get('/booking/edit/{id}/{room}', [BookingController::class, 'editBooking'])->name('booking.edit');
+    //Route::get('/booking/edit/{id}/{room}', [BookingController::class, 'editBooking'])->name('booking.edit');
+
+    Route::get('/booking/edit-ajax/{id}/{room}', [BookingController::class, 'editAjax'])->name('booking.editAjax');
     Route::post('/booking/insert', [BookingController::class, 'insertBooking'])->name('booking.insert');
 
     Route::get('/quanly', [RoomController::class, 'quanly'])->name('admin.quanly');
@@ -62,10 +64,11 @@ Route::middleware(['admin:1|3'])->group(function () {
     // AJAX room fetch
     Route::get('/fetchrooms', [BookingController::class, 'fetchRooms'])->name('fetch.rooms');
     Route::get('/ajax/fetch-rooms', [BookingController::class, 'fetchRooms'])->name('ajax.fetch-rooms');
-
+   
 
    
 });
+
 
 Route::post('/logout', function () {
     Auth::logout();
@@ -73,6 +76,8 @@ Route::post('/logout', function () {
     request()->session()->regenerateToken();
     return redirect('/'); // hoặc về trang chủ
 })->name('logout');
+
+
 
 
 Route::get('/rooms', [RoomController::class, 'index'])->name('rooms.index');
@@ -86,6 +91,8 @@ Route::get('/rooms/xacnhan', [RoomController::class, 'xacNhan'])->name('rooms.xa
 Route::post('/confirm-booking', [RoomController::class, 'confirmBooking'])->name('booking.confirm');
 Route::get('/confirm-booking', [RoomController::class, 'confirmBooking'])->name('booking.confirm');
 Route::get('/booking-success', [RoomController::class, 'success'])->name('thanhcong');
+Route::get('/in-phieu', [RoomController::class, 'printReceipt'])->name('booking.print');
+
 
 //chi tiết phòng mới
 // web.php

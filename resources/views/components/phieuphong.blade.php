@@ -5,14 +5,16 @@
 
     <style>
         .container {
-            width: 1200px;
-            margin: 20px auto;
-            background: #fff;
-            padding: 20px;
-            border-radius: 5px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-            overflow: hidden;
-            flex-direction: column;
+            width: 100%;
+    max-width: 900px;
+    background: #fff;
+    padding: 20px;
+    border-radius: 5px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    overflow-y: auto;
+    max-height: 80vh;
+    display: flex;
+    flex-direction: column;
         }
         .header {
         background-color: #d32f2f;
@@ -109,11 +111,7 @@
 </head>
 <body>
 <script> 
-    function goBack() {
-    // Redirect to the desired page
-    window.location.href = "{{ route('admin.quanly') }}"; // Replace with your actual page
-}
-
+   
     //hàm xử lý kiểm tra xem ngày ra có lớn hơn ngày vào không.
         function validateDates() {
             const checkin = new Date(document.getElementById('checkin').value);

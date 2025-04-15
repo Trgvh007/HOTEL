@@ -1,10 +1,5 @@
 <x-Admin_Layout>
 <x-slot name='title'>Quản lý Khách sạn</x-slot>
-@if (session('status'))
-    <script>
-        alert("{{ session('status') }}");
-    </script>
-@endif
 
 
 <div class="content">
@@ -114,27 +109,29 @@
         
 
         <div id="context-menu">
-        <button onclick="nhanPhong()">Nhận phòng</button>
+        <button onclick=" openPhieuNhanPhong({{ $room->so_phong }})">Nhận phòng</button>
             <button onclick="datPhong()">Đặt phòng trước</button> 
             <button onclick="capNhatTrangThai()">Cập nhật trạng thái</button> 
             <button onclick="xoaPhong()">Xóa phòng</button>
     </div>
         </div>
    
-       
+
+        <div id="overlay-background"
+     onclick="closePhieuPhong()"
+     style="display:none; position:fixed; top:0; left:0; width:100%; height:100%;
+            background:rgba(0,0,0,0.6); z-index:999;"></div>
+
+<div id="phieu-phong-overlay"
+     style="display:none; position:fixed; top:50%; left:50%; transform:translate(-50%, -50%);
+            background:white; padding:0; border-radius:10px; z-index:1000;
+             max-width: 950px;  max-height: 90vh; overflow-y: auto; width: 90vw; height: auto;">
+</div>
+
+
+
     
-
 </x-Admin_Layouts>
-<<<<<<< HEAD
-
-
-<script>
-    function logoutWithConfirm() {
-        if (confirm('Bạn có chắc chắn muốn đăng xuất không?')) {
-            document.getElementById('logout-form').submit();
-        }
-    }
-=======
 @if (session('status'))
     <div id="toast-success" class="custom-toast success auto-hide">
         <span class="icon">✅</span>
@@ -190,5 +187,30 @@
     setTimeout(() => {
         document.querySelectorAll('.auto-hide').forEach(el => el.remove());
     }, 5000);
->>>>>>> Cus_Booking_RoomDetail_Filter(Ad)
+
+
+    function logoutWithConfirm() {
+        if (confirm('Bạn có chắc chắn muốn đăng xuất không?')) {
+            document.getElementById('logout-form').submit();
+        }
+    }
+
+
+    function openPhieuNhanPhong(roomId) {
+        console.log('Room ID:', roomId);
+    fetch(`/phieunhanphong/${roomId}`)
+        .then(res => res.text())
+        .then(html => {
+            document.getElementById('phieu-phong-overlay').innerHTML = html;
+            document.getElementById('overlay-background').style.display = 'block';
+            document.getElementById('phieu-phong-overlay').style.display = 'block';
+        })
+        .catch(error => console.error('Error fetching the form:', error));
+}
+
+function closePhieuPhong() {
+    document.getElementById('overlay-background').style.display = 'none';
+    document.getElementById('phieu-phong-overlay').style.display = 'none';
+}
+
 </script>

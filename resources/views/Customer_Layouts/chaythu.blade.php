@@ -1,6 +1,5 @@
-@extends('layouts.main')
-@section("title","Xác nhận")
-@section('content')
+<x-Home_header>
+    <x-slot name='title'>Room </x-slot>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
 <style>
@@ -147,9 +146,9 @@ h4 {
             <div style="margin-bottom: 15px;">
                 <label style="display: block; margin-bottom: 5px;">Phương thức thanh toán:</label>
 
-                <label><input type="radio" name="payment_method" value="tien_mat" checked onchange="toggleQRCode()"> Thanh toán khi nhận phòng</label><br>
+                <label><input type="radio" name="payment_method" value="Thanh toán khi nhận phòng" checked onchange="toggleQRCode()"> Thanh toán khi nhận phòng</label><br>
 
-                <label><input type="radio" name="payment_method" value="qr_code" onchange="toggleQRCode()"> Quét mã QR</label>
+                <label><input type="radio" name="payment_method" value="Quét mã QR" onchange="toggleQRCode()"> Quét mã QR</label>
 
                 <div id="qr-container" style="margin-top: 20px; display: none; text-align: center;">
                     <p>Vui lòng quét mã QR để thanh toán:</p>
@@ -281,10 +280,10 @@ h4 {
 <script>
     function toggleQRCode() {
         const qrContainer = document.getElementById("qr-container");
-        const qrOption = document.querySelector('input[name="payment_method"][value="qr_code"]');
+        const qrOption = document.querySelector('input[name="payment_method"][value="Quét mã QR"]');
 
         qrContainer.style.display = qrOption.checked ? "block" : "none";
     }
 </script>
 
-@endsection
+</x-Home_header>

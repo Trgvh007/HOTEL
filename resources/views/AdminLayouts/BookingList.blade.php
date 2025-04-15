@@ -3,21 +3,25 @@
 
     <!-- Kiểm tra và hiển thị lỗi -->
     @if ($errors->any())
-        <div style="color:red; margin:0 auto;">
-            <div>{{ __('Whoops! Something went wrong.') }}</div>
-            <ul>
-                @foreach ($errors->all() as $error)
-                    <li>{{ $error }}</li>
-                @endforeach
-            </ul>
-        </div>
-    @endif
+    <script>
+        let errorMessages = {!! json_encode($errors->all()) !!};
+        alert("Đã xảy ra lỗi:\n\n" + errorMessages.join("\n"));
+    </script>
+@endif
+
 
     @if (session('status'))
     <script>
         alert("{{ session('status') }}");
     </script>
 @endif
+
+@if (session('success'))
+    <script>
+        alert("{{ session('success') }}");
+    </script>
+@endif
+
 <x-Admin_Layout>
 <x-slot name='title'>
 Danh Sách Đặt Phòng
@@ -99,27 +103,15 @@ Danh Sách Đặt Phòng
             <button onclick="printTable()" class="btn btn-primary">Print</button>
             <button style = "background: blue; color:#fff";  class="btn btn-primary"> ✅ Nhận phòng </button>
           </div>
-<<<<<<< HEAD
-
-        
-
-</x-Admin_Layout>
-
-
-<script>
-    function logoutWithConfirm() {
-        if (confirm('Bạn có chắc chắn muốn đăng xuất không?')) {
-            document.getElementById('logout-form').submit();
-        }
-    }
-</script>
-=======
-          <div id="overlay-background" onclick="closePhieuPhong()"
-     style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.6); z-index:999;"></div>
+          <div id="overlay-background"
+     onclick="closePhieuPhong()"
+     style="display:none; position:fixed; top:0; left:0; width:100%; height:100%;
+            background:rgba(0,0,0,0.6); z-index:999;"></div>
 
 <div id="phieu-phong-overlay"
-     style="display:none; position:fixed; top:50%; left:50%; transform:translate(-50%,-50%);
-     background:white; padding:30px; border-radius:12px; z-index:1000; max-height:90vh; overflow-y:auto; width:80%;">
+     style="display:none; position:fixed; top:50%; left:50%; transform:translate(-50%, -50%);
+            background:white; padding:0; border-radius:10px; z-index:1000;
+             max-width: 950px;  max-height: 90vh; overflow-y: auto; width: 90vw; height: auto;">
 </div>
 
 <script>
@@ -137,8 +129,17 @@ function closePhieuPhong() {
     document.getElementById('overlay-background').style.display = 'none';
     document.getElementById('phieu-phong-overlay').style.display = 'none';
 }
+
+
+function logoutWithConfirm() {
+        if (confirm('Bạn có chắc chắn muốn đăng xuất không?')) {
+            document.getElementById('logout-form').submit();
+        }
+    }
+
+
+    
 </script>
 
 
 </x-Admin_Layout>
->>>>>>> Cus_Booking_RoomDetail_Filter(Ad)

@@ -1,8 +1,7 @@
-@extends('layouts.main')
-@section("title","Đặt phòng")
+<x-Home_header>
+    <x-slot name='title'>Room </x-slot>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
 
-@section('content')
 <style>
     
     #overlay-room-detail {
@@ -175,7 +174,7 @@ th, td {
             <input type="number" id="rooms" name="rooms" value="{{ $roomCount ?? '' }}"
  style="width: 70%; padding: 10px; border: 1px solid #ccc; border-radius: 4px;">
         </div>
-        <div style="margin-left: 15px;">
+        <div style="margin-top: 25px;">
             <button type="submit" style="background-color: #f1c40f; color: #fff; padding: 10px 30px; border: none; border-radius: 4px; cursor: pointer;">Tìm Kiếm</button>
         </div>
     </form>
@@ -457,4 +456,4 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     });
 </script>
-@endsection
+</x-Home_header>

@@ -1,8 +1,8 @@
 <x-Home_header>
     <x-slot name="title">VỤ NỔ LỚN HOTEL</x-slot>
-</x-Home_header>
+
     <!-- Hero Section -->
-   <section class="hero-section" style="background-image: url('{{ asset('Cusimage/home.png') }}'); background-size: cover; background-position: center;">
+   <section class="hero-section" style="background-image: url('{{ asset('Cusimage/VNL.jpg') }}'); background-size: cover; background-position: center;">
   
         <div class="container">
             <div class="hero-content">
@@ -36,6 +36,7 @@
                         name="rooms" 
                         placeholder="Nhập số phòng"
                         required>
+                        
                 </div>
                 <button type="submit" class="search-btn">Tìm kiếm</button>
 </form>
@@ -171,47 +172,6 @@
         </div>
     </section>
 
-    <!-- Footer -->
-    <footer class="bg-dark text-white py-4 mt-5">
-        <div class="container">
-            <div class="row">
-                <div class="col-md-4">
-                    <h4>BẠN CẦN GIÚP ĐỠ?</h4>
-                    <ul class="list-unstyled">
-                        <li><a href="#" class="text-white">Quản lý đặt chỗ của bạn</a></li>
-                        <li><a href="#" class="text-white">Hỗ trợ</a></li>
-                        <li><a href="#" class="text-white">Bán chạy nhất</a></li>
-                    </ul>
-                </div>
-                <div class="col-md-4 text-center">
-                    <img src="{{ asset('Cusimage/logo1.png') }}" alt="VNL Hotel" class="img-fluid" style="max-width: 200px;">
-                    <div class="social-icons mt-3">
-                        <a href="#" class="text-white mx-2"><i class="fab fa-facebook-f"></i></a>
-                        <a href="#" class="text-white mx-2"><i class="fab fa-instagram"></i></a>
-                        <a href="#" class="text-white mx-2"><i class="fab fa-youtube"></i></a>
-                    </div>
-                </div>
-                <div class="col-md-4">
-                    <h4>ĐIỀU KHOẢN & QUY ĐỊNH</h4>
-                    <ul class="list-unstyled">
-                        <li><a href="#" class="text-white">Điều khoản chung</a></li>
-                        <li><a href="#" class="text-white">Quy định chung</a></li>
-                        <li><a href="#" class="text-white">Quy định về thanh toán</a></li>
-                        <li><a href="#" class="text-white">Chính sách giải quyết tranh chấp</a></li>
-                    </ul>
-                </div>
-            </div>
-            <div class="row mt-4">
-                <div class="col-12 text-center">
-                    <p class="mb-0">© 2023 VNL Hotel. All Rights Reserved.</p>
-                </div>
-            </div>
-        </div>
-    </footer>
-
-    <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
     <script>
     function validateDates() {
         const checkinInput = document.getElementById("checkin").value;
@@ -248,3 +208,4 @@
 
 </body>
 </html> 
+</x-Home_header>

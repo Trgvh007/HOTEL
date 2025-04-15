@@ -163,7 +163,7 @@ public function chaythu(Request $request)
 
 public function luudulieu(Request $request)
 {
-    // Lấy phương thức thanh toán (ví dụ: 'qr_code' hoặc 'tien_mat')
+   
     $paymentMethod = $request->input('payment_method');
 
     // 1. VALIDATE
@@ -186,15 +186,13 @@ public function luudulieu(Request $request)
     $checkout = $request->input('checkout');
     $user = Auth::user(); 
     // 3. Tính tổng tiền (ví dụ cộng tất cả đơn giá của các phòng, cần đảm bảo giá được xử lý dạng số)
-    $tong_tien = 0;
-foreach ($rooms as $room) {
-    $priceClean = str_replace([' VNĐ', 'đ', ','], '', $room['price']);
-    $tong_tien += floatval($priceClean);
-}
-$tong_tien *= 1000; // Thêm 3 số 0 vào cuối
+    //$tong_tien = 0;
+
+//$tong_tien *= 1000; // Thêm 3 số 0 vào cuối
+
 
     // 4. Transaction: lưu tất cả thông tin vào DB
-    DB::transaction(function () use ($request, $rooms, $paymentMethod, $checkin, $checkout, $tong_tien) {
+    DB::transaction(function () use ($request, $rooms, $paymentMethod, $checkin, $checkout) {
         // 4.1 Lưu khách hàng
         
         // 4.1 Kiểm tra user đã đăng nhập và tìm xem đã có thông tin khách hàng chưa
@@ -206,7 +204,7 @@ if ($user) {
 
     if ($existingCustomer) {
         // Đã tồn tại thông tin khách hàng, lấy ID
-        $id_khach_hang = $existingCustomer->FK_ID_user; // hoặc ID_KH tuỳ tên cột trong bảng của bạn
+        $id_khach_hang = $existingCustomer->ID_KH; // hoặc ID_KH tuỳ tên cột trong bảng của bạn
     } else {
         // Chưa có, tiến hành thêm mới
         $id_khach_hang = DB::table('khach_hang')->insertGetId([
@@ -244,9 +242,13 @@ if ($user) {
                 ->update(['trang_thai' => 'Đặt trước']);
 
             // Xử lý giá phòng (loại bỏ định dạng định dạng tiền)
-            $priceClean = str_replace([' VNĐ', 'đ', ','], '', $room['price']);
-            $gia_so = floatval($priceClean);
+           // $priceClean = str_replace([' VNĐ', 'đ', ','], '', $room['price']);
+           // $gia_so = floatval($priceClean);
 
+       
+            $gia_so = (int) preg_replace('/[^\d]/', '', $room['price']);
+          
+        
             // Lưu chi tiết đặt phòng
             DB::table('ct_dat_phong')->insert([
                 'FK_ID_Booking' => $id_dat_phong, // Liên kết với booking vừa chèn
@@ -257,6 +259,10 @@ if ($user) {
             ]);
         }
 
+        // 4.4 Lấy tổng tiền từ bảng ct_dat_phong đã tính sẵn
+$tong_tien = DB::table('ct_dat_phong')
+->where('FK_ID_Booking', $id_dat_phong)
+->value('thanh_tien'); 
         // 4.4 Xác định ngày thanh toán dựa vào phương thức thanh toán
         // Nếu là quét mã QR: lấy thời gian hiện tại, nếu là thanh toán khi nhận phòng: để 0000-00-00
         $ngay_thanh_toan = ($paymentMethod === 'Quét mã QR') 
@@ -270,15 +276,43 @@ if ($user) {
             'FK_ID_Booking'   => $id_dat_phong, // Liên kết với booking đã lưu ở trên
             'ngay_thanh_toan' => $ngay_thanh_toan,
         ]);
+
+        session([
+            'ho_ten'        => $request->ho_ten,
+            'email'         => $request->email,
+            'checkin'       => $checkin,
+            'checkout'      => $checkout,
+            'booking_time'  => now()->format('d/m/Y H:i:s'),
+            'rooms'         => $rooms,
+            'totalAmount'   => $tong_tien,
+            'id_booking'    => $id_dat_phong,
+        ]);
     });
 
+    
+
+   
     return redirect()->route('thanhcong')->with('success', 'Đã lưu thông tin khách hàng, đặt phòng và hóa đơn thành công!');
 }
 
 public function success()
 {
-    return view('Customer_Layouts.thanhcong');
+    $bookingData = session()->all();
+    return view('Customer_Layouts.thanhcong',  compact('bookingData'));
 }
+
+public function printReceipt()
+{
+    $bookingData = session()->all();
+    if (!isset($bookingData['id_booking'])) {
+        return redirect()->route('home')->with('error', 'Không tìm thấy thông tin đặt phòng trong session.');
+    }
+    return view('Customer_Layouts.print', compact('bookingData'));
+} 
+
+
+
 }
+
 
 
