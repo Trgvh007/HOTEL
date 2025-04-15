@@ -55,4 +55,12 @@ class AuthenticatedSessionController extends Controller
 
         return redirect('/');
     }
+    protected function authenticated(Request $request, $user)
+{
+    if ($user->level == User::ROLE_ADMIN) {
+        return redirect()->route('quanly.php'); // Đường dẫn đến dashboard của quản lý
+    } elseif ($user->level == User::ROLE_USER) {
+        return redirect()->route('dashboard'); // Đường dẫn đến dashboard của khách hàng
+    } 
+}
 }

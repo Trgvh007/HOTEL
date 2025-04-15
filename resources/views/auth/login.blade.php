@@ -1,4 +1,11 @@
+
+
+
 <x-guest-layout>
+
+   
+       
+
     <div style="
         display: flex;
         justify-content: center;
@@ -25,6 +32,7 @@
                 <img src="{{ asset('image/Logo.png') }}" alt="Logo" style="width: 300px;">
             </div>
 
+
             <!-- Login Form -->
             <div style="padding: 3rem; width: 400px;">
                 <h2 style="font-size: 24px; font-weight: bold; margin-bottom: 1.5rem;">Welcome back!</h2>
@@ -45,8 +53,12 @@
                     </div>
                 @endif
 
+
+  
+
                 <form method="POST" action="{{ route('login') }}">
                     @csrf
+
 
                     <!-- Email -->
                     <div style="margin-bottom: 1rem;">
@@ -86,6 +98,12 @@
                     @endif
                 </form>
             </div>
+
+
+
+
         </div>
     </div>
 </x-guest-layout>
+
+
