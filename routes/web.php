@@ -31,13 +31,6 @@ Route::get('/search', [HomeController::class, 'search'])->name('search');
 Route::get('/trangchu', [HomeController::class, 'trangchu'])->name('home');
 
 require __DIR__.'/auth.php';
-// Room routes
-Route::prefix('rooms')->group(function () {
-    Route::get('/', [HomeController::class, 'index'])->name('rooms.index');
-    Route::get('/search', [RoomController::class, 'search'])->name('rooms.search');
-    Route::get('/{room}', [RoomController::class, 'show'])->name('rooms.show');
-});
-
 
 
 // Booking routes
@@ -85,7 +78,7 @@ Route::post('/logout', function () {
 
 
 
-
+Route::middleware(['admin:2'])->group(function () {
 Route::get('/rooms', [RoomController::class, 'index'])->name('rooms.index');
 
 Route::post('/rooms', [RoomController::class, 'search'])->name('search1');
@@ -99,7 +92,12 @@ Route::get('/confirm-booking', [RoomController::class, 'confirmBooking'])->name(
 Route::get('/booking-success', [RoomController::class, 'success'])->name('thanhcong');
 Route::get('/in-phieu', [RoomController::class, 'printReceipt'])->name('booking.print');
 
-
+// Room routes
+Route::prefix('rooms')->group(function () {
+    Route::get('/', [HomeController::class, 'index'])->name('rooms.index');
+    Route::get('/search', [RoomController::class, 'search'])->name('rooms.search');
+    Route::get('/{room}', [RoomController::class, 'show'])->name('rooms.show');
+});
 
 //chi tiết phòng mới
 // web.php
@@ -108,11 +106,12 @@ Route::get('/rooms/show/{room_id}', [RoomController::class, 'show'])->name('room
 Route::get('/dienform', [RoomController::class, 'chaythu'])->name('chaythu');
 Route::post('/themdulieu', 'App\Http\Controllers\RoomController@chaythu')->name("them");
 
-// Xử lý lưu sách
+
 Route::post('/batdauluu', 'App\Http\Controllers\RoomController@luudulieu')->name("luu");
 Route::get('/booking/edit-ajax/{id}/{room}', [BookingController::class, 'editAjax'])->name('booking.editAjax');
 
 Route::post('/batdauluu', 'App\Http\Controllers\RoomController@luudulieu')->name("luu");
 
+});
 
 

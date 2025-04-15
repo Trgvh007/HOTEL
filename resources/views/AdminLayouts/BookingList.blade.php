@@ -137,7 +137,11 @@ function logoutWithConfirm() {
         }
     }
 
-
+ // Tự động đăng xuất khi người dùng đóng hoặc rời khỏi trang
+ window.addEventListener('beforeunload', function(event) {
+        // Gửi yêu cầu logout trước khi đóng hoặc chuyển trang
+        navigator.sendBeacon('/logout'); // Gửi yêu cầu logout đến server
+    });
     
 </script>
 
