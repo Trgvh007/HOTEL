@@ -204,7 +204,7 @@ h4 {
                 </tr>
             @endforeach
         </table>
-        <p style="text-align: right; margin: 0; font-size: 18px; font-weight: bold; position: relative; top:10px;">
+        <p style="text-align: right; margin: 0; font-size: 18px; font-weight: bold; position: relative; top:10px; font-family: 'Tahoma', sans-serif;">
     <strong>Tổng giá:</strong> {{ $totalPrice }} VNĐ </p>
 
 
