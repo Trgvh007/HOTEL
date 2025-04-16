@@ -110,7 +110,6 @@ Route::post('/themdulieu', 'App\Http\Controllers\RoomController@chaythu')->name(
 Route::post('/batdauluu', 'App\Http\Controllers\RoomController@luudulieu')->name("luu");
 
 
-//Route::post('/batdauluu', 'App\Http\Controllers\RoomController@luudulieu')->name("luu");
 
 });
 
