@@ -108,7 +108,7 @@ Route::post('/themdulieu', 'App\Http\Controllers\RoomController@chaythu')->name(
 
 
 Route::post('/batdauluu', 'App\Http\Controllers\RoomController@luudulieu')->name("luu");
-Route::get('/booking/edit-ajax/{id}/{room}', [BookingController::class, 'editAjax'])->name('booking.editAjax');
+
 
 Route::post('/batdauluu', 'App\Http\Controllers\RoomController@luudulieu')->name("luu");
 
