@@ -123,11 +123,12 @@
         justify-content: space-between; /* Đảm bảo căn thẳng hàng */
         max-width: 1200px;
         margin: 0 auto; /* Canh giữa */
+        
     }
 
     .room-selection {
         flex: 7;
-        padding: 20px;
+        padding: 15px;
         margin-right: 10px; /* Giữ khoảng cách với booking-info */
         background-color: #fff;
         border: 1px solid #e0e0e0;
@@ -140,13 +141,25 @@
     }
 
     .booking-info {
-        flex: 3;
-        padding: 10px;
-        border: 1px solid #ccc; /* Giữ viền cho thông tin đặt phòng */
-        border-radius: 8px;
-        background-color: #f9f9f9;
-        max-width: 40%; /* Điều chỉnh cho hợp với flex */
+       flex: 0 0 40%;
+    border: 2px dashed #ccc;
+    padding: 20px;
+    border-radius: 12px;
+    background-color: #fff;
+    align-self: flex-start;/* Điều chỉnh cho hợp với flex */
     }
+
+    
+
+    #final-total,
+.currency-unit {
+    /* Áp dụng cùng màu sắc và độ đậm */
+    color: #bd1a08ff; /* Màu cam đậm, nổi bật */
+    font-weight: **bold**; 
+    
+    /* Riêng #final-total cần cỡ chữ lớn hơn */
+    font-size: 1.5em; 
+}
     table {
     width: 100%;
     border-collapse: collapse;
@@ -156,10 +169,67 @@ th, td {
     text-align: center;
     border-bottom: 1px solid #ccc;
 }
+
+.search-container,
+.search-container form,
+.position-relative {
+    overflow: visible !important;
+}
+#branchDropdown {
+    position: absolute !important;
+    top: 100%;
+    left: 0;
+    width: 100%;
+    background: #fff;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    z-index: 99999 !important;
+}
+
+#branchDropdown li {
+    cursor: pointer;
+}
+.no-room-message {
+    text-align: center;
+    margin-top: 20px;
+    color: #555; /* màu chữ nhẹ nhàng */
+    font-size: 16px;
+    font-weight: 500;
+}
+#branchDropdown li:hover {
+    background-color: #f5f5f5;
+}
     </style>
 <div class="search-container" style="max-width: 1200px; margin: 20px auto; padding: 20px; border: 1px solid #e0e0e0; border-radius: 8px; background-color: #fff; display: flex; justify-content: space-between; align-items: center;">
     <form method="POST" onsubmit="return ktngay()" style="width: 100%; display: flex; align-items: center;">
         @csrf
+
+        <div style="flex: 1; min-width: 250px; margin-right: 15px;">
+            <label for="branchSearch" style="display: block; margin-bottom: 5px;">Bạn muốn nghỉ dưỡng ở đâu?</label>
+            <div class="position-relative" style="width: 100%;">
+                <input type="text" id="branchSearch" class="form-control" 
+                       placeholder="Nhập Khách sạn / Điểm đến"
+                         value="{{ $branchName ?? '' }}" 
+                       onkeyup="filterBranches(this.value)" autocomplete="off"
+                       style="width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 4px;">
+               <input type="hidden" id="chi_nhanh_id" name="chi_nhanh_id" value="{{ $branchId ?? '' }}">
+
+               <ul id="branchDropdown"
+    class="list-group position-absolute w-100 mt-1 shadow-sm"
+    style="display:none; z-index:9999 !important; max-height:220px; overflow:auto; background:#fff; position:absolute; top:100%; left:0;">
+
+                    @foreach($branches ?? [] as $branch)
+                        <li class="list-group-item branch-item" data-id="{{ $branch->id }}" data-title="{{ $branch->ten_chi_nhanh }}">
+                            <a href="javascript:void(0)" 
+                               onclick="selectBranch('{{ addslashes($branch->ten_chi_nhanh) }}', '{{ $branch->id }}')">
+                                {{ $branch->ten_chi_nhanh }}
+                            </a>
+                        </li>
+                    @endforeach
+                </ul>
+            </div>
+        </div>
+
         <div style="flex: 1; margin-right: 15px;">
             <label style="display: block; margin-bottom: 5px;">Ngày đến</label>
             <input type="date" id="checkin" name="checkin" value="{{ $checkin ?? '' }}"
@@ -188,7 +258,7 @@ th, td {
                 <img src='./Cusimage/{{ $room->hinh_anh }}' alt='{{ $room->ten_loai }}' class='room-image' style='width: 50%; height: auto; object-fit: cover; margin-right: 10px;'>
                 <div class='room-info' style='flex: 1;'>
                     <h3>{{ $room->ten_loai }}</h3>
-                    <p>👀 Số phòng: {{ $room->so_phong }}</p>
+                    <p>👀 Số người tối đa: {{ $room->so_nguoi }}</p>
                     <p>🏠 Diện tích: {{ $room->dien_tich }} m²</p>
                     <p>🌇 View: {{ $room->view }}</p>
                     <p>🛏️ Giường: {{ $room->loai_giuong }}</p>
@@ -197,30 +267,30 @@ th, td {
                         <p>✅ Hủy MIỄN PHÍ trước ngày 10 kể từ ngày đặt phòng</p>
                         <p>✅ Miễn phí các tiện ích: Hồ bơi, Phòng gym và spa,... trong suốt thời gian lưu trú</p>
                     </div>
-                    <p>Giá: {{ number_format($room->don_gia, 0, ',', '.') }} VND/đêm</p>
+                    <b><p>Giá: {{ number_format($room->gia, 0, ',', '.') }} VNĐ/đêm</p></b>
                 </div>
                 <button class='select-room-btn' style='position: absolute; bottom: 10px; right: 10px; background-color: #f1c40f; color: white; border: none; padding: 10px 15px; cursor: pointer; border-radius: 5px;' 
                     data-name='{{ $room->ten_loai }}' 
-                    data-price='{{ $room->don_gia }}'
+                    data-price='{{ $room->gia }}'
                     data-room-number='{{ $room->so_phong }}'>Chọn phòng</button>
             </div>
             @endforeach
         </div>
-@else
-    <p>Hiện tại không có phòng trống.</p>
-@endif
+
 
 <!-- Khu vực hiển thị thông tin đặt phòng -->
 <div class="booking-info" >
-        <h3>Thông tin đặt phòng</h3>
-        <p id="hotel-name">VNL Luxury Riverfront</p>
+        <h2 style ="margin-top: 0;
+        text-align: center;">Thông tin đặt phòng</h2>
+        <h3 style ="margin-top: 0;
+        color: #f1c40f;
+        text-align: center;">VNL Luxury Riverfront</h3>
         <p><strong>Thời gian phòng:</strong> <span id="booking-time">Chưa xác định</span></p>
         <table style="width: 100%; border-collapse: collapse; margin-bottom: 10px;">
             <thead>
                 <tr>
                     <th>Phòng</th>
                     <th>Loại phòng</th>
-                    <th>Số phòng</th>
                     <th>Giá</th>
                     <th></th>
                 </tr>
@@ -228,13 +298,16 @@ th, td {
             <tbody id="booking-rooms">
             </tbody>
         </table>
-        <p><strong>Tổng cộng:</strong> <span id="final-total">--</span> VND</p>
+        <p><strong>Tổng cộng:</strong> <span id="final-total">--</span> <span class="currency-unit">VNĐ</span></p>
         <button id="book-now-btn" class="book-now-btn" 
         style="padding: 10px 20px; background-color: #f1c40f; color: white; border: none; border-radius: 4px; cursor: pointer;">
         Đặt ngay</button>
     </div>
 </div>
 </div>
+@else
+    <p class="no-room-message"> 😞Hiện tại không có phòng trống.</p>
+@endif
 <script>
     document.addEventListener("DOMContentLoaded", function () {
         // Nếu input chưa có value (tức chưa có từ Request), mới lấy từ localStorage
@@ -280,6 +353,75 @@ function ktngay() {
     return true;
 }
 
+/// 
+function filterBranches(keyword) {
+    const dropdown = document.getElementById("branchDropdown");
+    const items = dropdown.querySelectorAll(".branch-item");
+    let hasResult = false;
+
+    items.forEach(item => {
+        const name = item.getAttribute("data-title").toLowerCase();
+        if (name.includes(keyword.toLowerCase())) {
+            item.style.display = "block";
+            hasResult = true;
+        } else {
+            item.style.display = "none";
+        }
+    });
+
+    dropdown.style.display = hasResult && keyword.trim() !== "" ? "block" : "none";
+}
+
+
+
+//dropdown
+function toggleDropdown(show = true) {
+    const dropdown = document.getElementById('branchDropdown');
+    dropdown.style.display = show ? 'block' : 'none';
+}
+
+function selectBranch(name, id) {
+    document.getElementById('branchSearch').value = name;
+    document.getElementById('chi_nhanh_id').value = id;
+    toggleDropdown(false);
+}
+
+function filterBranches(keyword) {
+    const filter = keyword.toLowerCase();
+    const items = document.querySelectorAll('#branchDropdown .branch-item');
+
+    let hasResult = false;
+    items.forEach(item => {
+        const title = item.getAttribute('data-title').toLowerCase();
+        if (title.includes(filter)) {
+            item.style.display = '';
+            hasResult = true;
+        } else {
+            item.style.display = 'none';
+        }
+    });
+
+    // chỉ hiện dropdown khi có kết quả
+    toggleDropdown(hasResult && filter.length > 0);
+}
+
+// Hiện dropdown khi click vào ô input
+document.getElementById('branchSearch').addEventListener('focus', () => {
+    const items = document.querySelectorAll('#branchDropdown .branch-item');
+    const hasItems = Array.from(items).some(item => item.style.display !== 'none');
+    toggleDropdown(hasItems);
+});
+
+// Ẩn dropdown khi click ra ngoài
+document.addEventListener('click', function(event) {
+    const dropdown = document.getElementById('branchDropdown');
+    const input = document.getElementById('branchSearch');
+    if (!dropdown.contains(event.target) && !input.contains(event.target)) {
+        toggleDropdown(false);
+    }
+});
+
+
 
     document.addEventListener("DOMContentLoaded", function () {
     const bookingRooms = document.getElementById("booking-rooms");
@@ -294,7 +436,7 @@ function ktngay() {
 
             // Kiểm tra xem phòng đã được chọn chưa
             if (selectedRooms.some(room => room.roomNumber === roomNumber)) {
-                alert(`Phòng ${roomNumber} đã được chọn trước đó.`);
+                alert(`Phòng này đã được chọn trước đó.`);
                 return;
             }
 
@@ -326,9 +468,10 @@ function ktngay() {
             let row = document.createElement("tr");
             row.innerHTML = `
                 <td>${index + 1}</td>
-                <td>${room.name}</td>
-                <td>${room.roomNumber}</td>
-                <td>${room.price.toLocaleString()} VNĐ</td>
+                <td>${room.name}
+             <input type="hidden" class="hidden-room-number" value="${room.roomNumber}">
+                </td>
+             <td>${room.price.toLocaleString()} VNĐ</td>
                 <td>
                     <button class="cancel-room-btn" data-id="${room.id}" style="color: red; cursor: pointer; border: none; background: none;">Hủy</button>
                 </td>
@@ -401,22 +544,28 @@ document.addEventListener("DOMContentLoaded", function () {
 
         // Danh sách phòng
         document.querySelectorAll("#booking-rooms tr").forEach((row, index) => {
-            let columns = row.getElementsByTagName("td");
-            if (columns.length > 0) {
-                ['room_name', 'room_number', 'price'].forEach((field, colIndex) => {
-                    let input = document.createElement("input");
-                    input.type = "hidden";
-                    input.name = `rooms[${index}][${field}]`;
-                    input.value = columns[colIndex + 1].innerText;
-                    form.appendChild(input);
-                });
-            }
-        });
+    const name = row.children[1]?.innerText.trim();
+    const roomNumber = row.querySelector(".hidden-room-number")?.value; // ✅ Lấy từ input ẩn
+    const price = row.children[2]?.innerText.trim();
+
+    if (name && price) {
+        const fields = { room_name: name, room_number: roomNumber, price: price };
+        for (let key in fields) {
+            let input = document.createElement("input");
+            input.type = "hidden";
+            input.name = `rooms[${index}][${key}]`;
+            input.value = fields[key];
+            form.appendChild(input);
+        }
+    }
+});
 
         document.body.appendChild(form);
         form.submit();
     });
 });
+
+
 </script>
 
 <div id="overlay-room-detail">

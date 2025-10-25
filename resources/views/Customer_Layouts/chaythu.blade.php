@@ -6,10 +6,14 @@
 
    /* Căn giữa và tăng kích thước tiêu đề */
 h4 {
+   
+    margin-top: 40px; 
+    margin-bottom: 0;
+    font-weight: 400;
+    font-size: 24px;
     text-align: center;
-    font-size: 28px;
-    font-weight: bold;
-    margin-bottom: 30px;
+    color: #002864;
+    text-transform: uppercase;
 }
 
 /* Container hiển thị theo tỷ lệ 6:4 */
@@ -37,7 +41,6 @@ h4 {
     background-color: #fff;
     align-self: flex-start;
 }
-
 
 
     .info-section h2 {
@@ -94,47 +97,100 @@ h4 {
     background-color: #d4ac0d !important; /* Màu đậm hơn khi hover */
     border-color: #d4ac0d !important;
 }
+.required {
+    color: red;
+    margin-left: 3px;
+    font-weight: bold;
+}
+
+.text-danger.small {
+    color: #d9534f; /* đỏ nhẹ */
+    font-size: 13px;
+    margin-top: 4px;
+    display: block;
+}
+
+#payment-provider-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex; /* Nếu bạn muốn các ô thanh toán nằm ngang */
+}
+
+.payment-option {
+    display: inline-block;
+    border: 2px solid transparent; /* 🚫 Không viền khi chưa chọn */
+    border-radius: 8px;
+    transition: all 0.2s ease;
+    padding: 5px;
+}
+
+.payment-option:hover {
+    border-color: #ccc; /* viền nhẹ khi rê chuột */
+}
+
+.payment-option.active {
+    border-color: red; /* 🔴 chỉ viền đỏ khi click chọn */
+    box-shadow: 0 0 6px rgba(255, 0, 0, 0.4);
+}
+
+/* 4. Style cho hình ảnh bên trong thẻ <a> */
+.qr-bank-img {
+    /* Đảm bảo kích thước ảnh cố định */
+    width: 95px; /* Điều chỉnh theo kích thước bạn thấy trong DevTools: 95 x 58 */
+    height: 58px; 
+    display: block; /* Loại bỏ khoảng trắng dưới ảnh */
+    object-fit: contain; /* Đảm bảo hình ảnh vừa vặn */
+}
 
 
+
+.payment-button {
+  background-color: blue;
+  border: none;
+  color: white;
+  padding:  10px 24px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 16px;
+  cursor: pointer;
+  border-radius: 8px;
+ 
+}
 </style>
 
 <h4>Xác nhận đặt phòng</h4>
 
-@if ($errors->any())
-    <div class="alert-error">
-        <ul>
-            @foreach ($errors->all() as $error)
-                <li>{{ $error }}</li>
-            @endforeach
-        </ul>
-    </div>
-@endif
-
 <div class="container">
     <!-- Form nhập thông tin khách hàng -->
     <div class="form-section">
-        <h2>Thông tin khách hàng</h2>
+        <h3>Thông tin khách hàng</h3>
         <form action="{{ route('luu') }}" method="POST">
             @csrf
 
             <div style="margin-bottom: 15px;">
-                <label>Họ và tên:</label>
+                <label>Họ và tên:<span class="required">*</span></label>
                 <input type="text" name="ho_ten" value="{{ old('ho_ten', optional($user)->name) }}" class="form-control" required>
+            @error('ho_ten')
+                    <div class="text-danger small">{{ $message }}</div>
+                @enderror
             </div>
 
             <div style="margin-bottom: 15px;">
-                <label>Số điện thoại:</label>
+                <label>Số điện thoại:<span class="required">*</span></label>
                 <input type="text" name="sdt" class="form-control">
+             @error('sdt')
+                    <div class="text-danger small">{{ $message }}</div>
+                @enderror
             </div>
 
             <div style="margin-bottom: 15px;">
-                <label>Căn cước công dân:</label>
-                <input type="text" name="cccd" class="form-control">
-            </div>
-
-            <div style="margin-bottom: 15px;">
-                <label>Email:</label>
+                <label>Email:<span class="required">*</span></label>
                 <input type="text" name="email" value="{{ old('email', optional($user)->email) }}" class="form-control">
+            @error('email')
+                    <div class="text-danger small">{{ $message }}</div>
+                @enderror
             </div>
 
             <div style="margin-bottom: 15px;">
@@ -144,27 +200,45 @@ h4 {
 
             <!-- PHƯƠNG THỨC THANH TOÁN -->
             <div style="margin-bottom: 15px;">
-                <label style="display: block; margin-bottom: 5px;">Phương thức thanh toán:</label>
-
-                <label><input type="radio" name="payment_method" value="Thanh toán khi nhận phòng" checked onchange="toggleQRCode()"> Thanh toán khi nhận phòng</label><br>
-
-                <label><input type="radio" name="payment_method" value="Quét mã QR" onchange="toggleQRCode()"> Quét mã QR</label>
-
-                <div id="qr-container" style="margin-top: 20px; display: none; text-align: center;">
-                    <p>Vui lòng quét mã QR để thanh toán:</p>
-                    <img src="{{ asset('Cusimage/qrcode.png') }}" alt="QR Code" style="width: 200px; height: 200px; border: 2px solid #ccc; border-radius: 8px;">
-                    <div style="margin-top: 10px; font-size: 16px; font-weight: bold; color: #1a73e8; background-color: #f1f3f4;  padding: 6px 12px; border-radius: 6px;">
-                Tổng tiền: {{ $totalPrice }} VNĐ
-                    </div>
-</div>
+                <label style="display: block; margin-bottom: 5px;">Chọn hình thức thanh toán:</label>
+<ul id="payment-provider-list" class="list-unstyled">
+  <li class="a-li-bank">
+    <a title="Vietcombank" href="javascript:void(0)" 
+       class="li-bank payment-option" 
+       data-provider-code="Vietcombank"
+       onclick="selectPayment(this)">
+      <img src="https://e-bills.vn/assets/img/QRPay.png" alt="QR Pay" height="74" width="160" class="qr-bank-img">
+    </a>
+  </li>
+</ul>
+              
+    <p class="payment-info">
+        Nhấn "Thanh toán" và sử dụng ứng dụng ngân hàng hoặc ví điện tử để quét mã, xác thực thanh toán
+    </p>
+    
+    <button type ="button" class="payment-button" onclick="handlePayment()">
+        THANH TOÁN
+    </button>
 
             </div>
 
+
+    <div id="qr-section" style="display:none;">
+        <h4>Quét Mã QR Thanh toán</h4>
+        <div id="payment-info"></div>
+        <img id="qr-image" src="" alt="QR code thanh toán">
+        <button type="submit" class="confirm-button" style="background-color:green;color:white;padding:10px 20px;border:none;border-radius:8px;">
+            XÁC NHẬN ĐÃ THANH TOÁN
+        </button>
+    </div>
+
+    
             <!-- Dữ liệu ẩn -->
             <input type="hidden" name="checkin" value="{{ $checkin }}">
             <input type="hidden" name="checkout" value="{{ $checkout }}">
             <input type="hidden" name="booking_time" value="{{ $bookingTime }}">
             <input type="hidden" name="total_price" value="{{ $totalPrice }}">
+            <input type="hidden" name="payment_method" id="payment_method" value="Quét mã QR">
 
             @foreach ($rooms as $index => $room)
                 <input type="hidden" name="rooms[{{ $index }}][room_name]" value="{{ $room['room_name'] }}">
@@ -172,9 +246,7 @@ h4 {
                 <input type="hidden" name="rooms[{{ $index }}][price]" value="{{ $room['price'] }}">
             @endforeach
 
-            <div style="text-align: center;">
-                <button type="submit" class="btn btn-primary">💾 Hoàn tất đặt phòng</button>
-            </div>
+            
         </form>
     </div>
 
@@ -192,14 +264,14 @@ h4 {
             <tr>
                 <th>STT</th>
                 <th>Tên phòng</th>
-                <th>Mã phòng</th>
+               
                 <th>Giá</th>
             </tr>
             @foreach ($rooms as $index => $room)
                 <tr>
                     <td>{{ $index + 1 }}</td>
                     <td>{{ $room['room_name'] }}</td>
-                    <td>{{ $room['room_number'] }}</td>
+                    
                     <td>{{ $room['price'] }}</td>
                 </tr>
             @endforeach
@@ -278,12 +350,77 @@ h4 {
 
 
 <script>
-    function toggleQRCode() {
-        const qrContainer = document.getElementById("qr-container");
-        const qrOption = document.querySelector('input[name="payment_method"][value="Quét mã QR"]');
+   
 
-        qrContainer.style.display = qrOption.checked ? "block" : "none";
+
+    function selectPayment(element) {
+    document.querySelectorAll('.payment-option').forEach(el => {
+        el.classList.remove('active');
+    });
+    element.classList.add('active');
+}
+    
+let selectedProvider = null;
+
+function selectPayment(element) {
+    document.querySelectorAll('.payment-option').forEach(el => el.classList.remove('active'));
+    element.classList.add('active');
+    selectedProvider = element.dataset.providerCode;
+      // Gán giá trị vào input hidden
+    const method = element.getAttribute('data-provider-code');
+    document.getElementById('payment_method').value = method;
+}
+
+function handlePayment() {
+    if (!selectedProvider) {
+        alert("Vui lòng chọn hình thức thanh toán!");
+        return;
     }
+
+    // Lấy dữ liệu từ input
+    const totalPrice = document.querySelector('input[name="total_price"]').value;
+    const bookingTime = document.querySelector('input[name="booking_time"]').value;
+    const checkin = document.querySelector('input[name="checkin"]').value;
+    const checkout = document.querySelector('input[name="checkout"]').value;
+
+    const amount = parseFloat(totalPrice.replace(/[^\d]/g, '')) || 0;
+
+    // Nội dung chuyển khoản
+    const content = `Thanh toan dat phong ${bookingTime}`;
+
+    // Thông tin tài khoản
+    const accountNumber = "106876832327";
+    const accountName = "SunSea Hotel";
+    const bankCode = "970415"; // Vietcombank
+
+    // Tạo link QR từ VietQR
+    const qrUrl = `https://img.vietqr.io/image/${bankCode}-${accountNumber}-compact.png?amount=${amount}&addInfo=${encodeURIComponent(content)}&accountName=${encodeURIComponent(accountName)}`;
+
+    
+    document.getElementById("qr-image").src = qrUrl;
+    document.getElementById("qr-section").style.display = "block";
+// Hiển thị thông tin thanh toán
+    document.getElementById("payment-info").innerHTML = `
+        <p><strong>Ngân hàng:</strong> VietinBank</p>
+        <p><strong>Chủ tài khoản:</strong> ${accountName}</p>
+        <p><strong>Số tiền:</strong> ${amount.toLocaleString()} VND</p>
+        <p><strong>Nội dung chuyển khoản:</strong> ${content}</p>
+    `;
+  
+
+    // (Tuỳ bạn) Gửi form tự động sau khi hiển thị QR
+    // document.getElementById('bookingForm').submit();
+     // Ẩn nút THANH TOÁN, hiện nút XÁC NHẬN
+    document.querySelector('.payment-button').style.display = 'none';
+    document.getElementById('confirm-payment-btn').style.display = 'inline-block';
+}
+
+function confirmPayment() {
+    alert("Cảm ơn bạn! Hệ thống đang xác nhận thanh toán...");
+    document.getElementById('bookingForm').submit();
+}
+
+
 </script>
 
 </x-Home_header>

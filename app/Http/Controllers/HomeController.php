@@ -10,7 +10,8 @@ class HomeController extends Controller
 {
     function trangchu()
     {
-    return view("home");
+        $branches = DB::table('chi_nhanh')->get();
+    return view("home", compact('branches'));
     }
     public function index()
     {
@@ -35,8 +36,8 @@ class HomeController extends Controller
                 $uu_dai = [];
                 Log::warning('uu_dai table does not exist');
             }
-
-            return view('home', compact('uu_dai'));
+ $branches = DB::table('chi_nhanh')->get();
+            return view('home', compact('uu_dai', 'branches'));
         } catch (\Exception $e) {
             Log::error('Database error: ' . $e->getMessage());
             $uu_dai = [];
@@ -100,5 +101,14 @@ class HomeController extends Controller
             return redirect()->route('home');
         }
         return view('booking');
+    }
+
+    public function searching()
+    {
+        // Lấy danh sách chi nhánh
+        $branches = DB::table('chi_nhanh')->get();
+
+        // Gửi dữ liệu qua view
+        return view('home', compact('branches'));
     }
 }

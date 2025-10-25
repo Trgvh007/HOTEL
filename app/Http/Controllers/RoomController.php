@@ -93,28 +93,65 @@ class RoomController extends Controller
 
     public function search(Request $request)
 {
+    $branchId = $request->input('chi_nhanh_id');
     $checkin = $request->input('checkin');
     $checkout = $request->input('checkout');
     $roomCount = $request->input('rooms'); // đổi tên để không đụng với danh sách phòng
 
     $request->validate([
+        'chi_nhanh_id' => 'required|exists:chi_nhanh,id',
         'checkin' => 'required|date|after_or_equal:today',
         'checkout' => 'required|date|after:checkin',
         'rooms' => 'required|integer|min:1',
     ]);
 
-    $rooms = DB::table('phong as p')
+     // Lấy tên chi nhánh
+    $branch = DB::table('chi_nhanh')->where('id', $branchId)->first();
+    $branchName = $branch ? $branch->ten_chi_nhanh : null;
+
+   /* $rooms = DB::table('phong as p')
         ->join('loai_phong as lp', 'p.FK_ID_loai', '=', 'lp.ID_Loai')
         ->select('p.so_phong', 'p.FK_ID_loai', 'p.hinh_anh', 'p.loai_giuong', 'p.don_gia', 'p.trang_thai',
                  'lp.ten_loai', 'lp.dien_tich', 'lp.mo_ta', 'p.view')
         ->where('p.trang_thai', 'Trống')
-        ->get();
+        ->get();  */
+
+    $rooms = DB::table('phong as p')
+    ->join('loai_phong as lp', 'p.FK_ID_loai', '=', 'lp.ID_Loai')
+    ->join('chi_nhanh as cn', 'p.chi_nhanh_id', '=', 'cn.id')
+    ->join('chi_nhanh_loai_phong as cnlp', function($join) {
+        $join->on('cnlp.chi_nhanh_id', '=', 'cn.id')
+             ->on('cnlp.loai_phong_id', '=', 'lp.ID_Loai');
+    })
+    ->select(
+        'p.so_phong',
+        'lp.ten_loai',
+        'p.loai_giuong',
+        'p.view', 
+        'cnlp.gia',
+        'p.hinh_anh',
+        'p.tang',
+        'p.trang_thai',
+        'lp.mo_ta',
+        'lp.dien_tich',
+        'cn.ten_chi_nhanh',
+        'lp.so_nguoi'
+    )
+    ->where('p.trang_thai', 'Trống')
+    ->where('p.chi_nhanh_id', $branchId)
+    ->get();
+
+    $branches = DB::table('chi_nhanh')
+    ->get();
 
     return view('Customer_Layouts.index', [
         'rooms' => $rooms,
         'checkin' => $checkin,
         'checkout' => $checkout,
-        'roomCount' => $roomCount // truyền thêm biến này
+        'roomCount' => $roomCount, // truyền thêm biến này
+        'branchId' => $branchId,
+        'branchName' => $branchName,
+         'branches' => $branches
     ]);
 }
 
@@ -171,13 +208,13 @@ public function luudulieu(Request $request)
         'ho_ten' => 'required',
         'email' => 'required|email',
         'sdt' => 'required',
-        'cccd' => 'required',
+      
     ], [
         'ho_ten.required' => 'Vui lòng nhập họ tên khách hàng.',
         'email.required' => 'Vui lòng nhập email.',
         'email.email' => 'Email không đúng định dạng.',
         'sdt.required' => 'Vui lòng nhập số điện thoại.',
-        'cccd.required' => 'Vui lòng nhập số CCCD.',
+       
     ]);
 
     // 2. Lấy danh sách phòng và các thông tin chung (ví dụ checkin, checkout)
@@ -211,7 +248,7 @@ if ($user) {
             'ho_ten'     => $request->ho_ten,
             'email'      => $request->email,
             'sdt'        => $request->sdt,
-            'cccd'       => $request->cccd,
+            
             'FK_ID_user' => $user->id,
         ]);
     }
@@ -221,7 +258,7 @@ if ($user) {
         'ho_ten' => $request->ho_ten,
         'email'  => $request->email,
         'sdt'    => $request->sdt,
-        'cccd'   => $request->cccd,
+      
         // Không có FK_ID_user
     ]);
 }
@@ -310,6 +347,50 @@ public function printReceipt()
     return view('Customer_Layouts.print', compact('bookingData'));
 } 
 
+public function lichSuDatPhong()
+{
+    $user = Auth::user();
+
+    if (!$user) {
+        return redirect()->route('login')->with('error', 'Vui lòng đăng nhập để xem lịch sử đặt phòng.');
+    }
+
+    // Lấy khách hàng tương ứng với user
+    $khachHang = DB::table('khach_hang')->where('FK_ID_user', $user->id)->first();
+
+    if (!$khachHang) {
+        return view('Customer_Layouts.lichsu', ['bookings' => []]); // Không có dữ liệu
+    }
+
+    // Lấy danh sách đặt phòng của khách hàng
+    $bookings = DB::table('dat_phong')
+        ->where('FK_ma_KH', $khachHang->ID_KH)
+        ->orderByDesc('ngay_dat')
+        ->get();
+
+    // Lấy chi tiết từng booking
+    $lichSu = [];
+
+    foreach ($bookings as $booking) {
+        $chiTietPhong = DB::table('ct_dat_phong')
+            ->join('phong', 'ct_dat_phong.FK_so_phong', '=', 'phong.so_phong')
+            ->where('FK_ID_Booking', $booking->ID_Booking)
+            ->select('ct_dat_phong.so_dem', 'phong.so_phong', 'ct_dat_phong.checkindate', 'ct_dat_phong.checkoutdate', 'ct_dat_phong.don_gia')
+            ->get();
+
+        $hoaDon = DB::table('hoa_don')
+            ->where('FK_ID_Booking', $booking->ID_Booking)
+            ->first();
+
+        $lichSu[] = [
+            'booking' => $booking,
+            'phong' => $chiTietPhong,
+            'hoadon' => $hoaDon,
+        ];
+    }
+
+    return view('Customer_Layouts.lichsu', ['lichSu' => $lichSu]);
+}
 
 
 }

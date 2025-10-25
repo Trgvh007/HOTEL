@@ -1,14 +1,41 @@
 <x-Home_header>
-    <x-slot name="title">VỤ NỔ LỚN HOTEL</x-slot>
+    <x-slot name="title">SunSea Hotel</x-slot>
 
     <!-- Hero Section -->
-   <section class="hero-section" style="background-image: url('{{ asset('Cusimage/VNL.jpg') }}'); background-size: cover; background-position: center;">
+   <section class="hero-section" style="background-image: url('{{ asset('Cusimage/SunSea.jpg') }}'); background-size: cover; background-position: center;">
   
         <div class="container">
             <div class="hero-content">
                 <div class="search-form">
                 <form action="{{ route('search1') }}" method="POST" onsubmit="return validateDates()">
                 @csrf
+<div class="form-group mb-3">
+        <label for="branchSearch">Bạn muốn nghỉ dưỡng ở đâu?</label>
+        <div class="position-relative" style="max-width:700px;">
+            <input type="text"
+                   id="branchSearch"
+                   class="form-control"
+                   placeholder="Nhập Khách sạn / Điểm đến"
+                   onkeyup="filterBranches(this.value)"
+                   autocomplete="off">
+
+            <input type="hidden" id="chi_nhanh_id" name="chi_nhanh_id" value="">
+
+    
+            <ul id="branchDropdown" class="list-group position-absolute w-100 mt-1 shadow-sm"
+                style="display:none; z-index:2000; max-height:220px; overflow:auto;">
+                @foreach($branches ?? [] as $branch)
+                    <li class="list-group-item branch-item" data-id="{{ $branch->id }}"
+                        data-title="{{ $branch->ten_chi_nhanh }}">
+                        <a href="javascript:void(0)" onclick="selectBranch('{{ addslashes($branch->ten_chi_nhanh) }}', '{{ $branch->id }}')">
+                             {{ $branch->ten_chi_nhanh }}
+                        </a>
+                    </li>
+                @endforeach
+            </ul>
+        </div>
+    </div>
+
                 <div class="form-group">
                     <label for="checkin">Ngày đến:</label>
                     <input type="text" 
@@ -38,8 +65,11 @@
                         required>
                         
                 </div>
+              <div class="form-group">
                 <button type="submit" class="search-btn">Tìm kiếm</button>
-</form>
+</div>
+            </div>
+
 
                 </div>
             </div>
@@ -204,8 +234,58 @@
 
         return true; // tất cả điều kiện hợp lệ
     }
+
+
+    /////
+function toggleDropdown(show = true) {
+    const dropdown = document.getElementById('branchDropdown');
+    dropdown.style.display = show ? 'block' : 'none';
+}
+
+function selectBranch(name, id) {
+    document.getElementById('branchSearch').value = name;
+    document.getElementById('chi_nhanh_id').value = id;
+    toggleDropdown(false);
+}
+
+function filterBranches(keyword) {
+    const filter = keyword.toLowerCase();
+    const items = document.querySelectorAll('#branchDropdown .branch-item');
+
+    let hasResult = false;
+    items.forEach(item => {
+        const title = item.getAttribute('data-title').toLowerCase();
+        if (title.includes(filter)) {
+            item.style.display = '';
+            hasResult = true;
+        } else {
+            item.style.display = 'none';
+        }
+    });
+
+    // chỉ hiện dropdown khi có kết quả
+    toggleDropdown(hasResult && filter.length > 0);
+}
+
+// Hiện dropdown khi click vào ô input
+document.getElementById('branchSearch').addEventListener('focus', () => {
+    const items = document.querySelectorAll('#branchDropdown .branch-item');
+    const hasItems = Array.from(items).some(item => item.style.display !== 'none');
+    toggleDropdown(hasItems);
+});
+
+// Ẩn dropdown khi click ra ngoài
+document.addEventListener('click', function(event) {
+    const dropdown = document.getElementById('branchDropdown');
+    const input = document.getElementById('branchSearch');
+    if (!dropdown.contains(event.target) && !input.contains(event.target)) {
+        toggleDropdown(false);
+    }
+});
 </script>
 
 </body>
+
 </html> 
 </x-Home_header>
+

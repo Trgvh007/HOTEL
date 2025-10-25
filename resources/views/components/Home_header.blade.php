@@ -38,7 +38,7 @@
 {{ Auth::user()->name }}
 </button>
 <div class="dropdown-menu">
-<a class="dropdown-item" href="{{route('booking.print')}}">Lịch sử đặt phòng</a>
+<a class="dropdown-item" href="{{route('lichsu')}}">Lịch sử đặt phòng</a>
 
                             <form action="{{ route('logout') }}" method="POST" class="d-inline">
                                 @csrf
