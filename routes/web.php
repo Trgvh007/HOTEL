@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\RoomController;
 use App\Http\Controllers\BookingController;
-
+use Illuminate\Support\Facades\DB;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -109,8 +109,8 @@ Route::post('/themdulieu', 'App\Http\Controllers\RoomController@chaythu')->name(
 
 Route::post('/batdauluu', 'App\Http\Controllers\RoomController@luudulieu')->name("luu");
 
-
-
+Route::get('/lich-su-dat-phong', [RoomController::class, 'lichSuDatPhong'])->name('lichsu');
+Route::get('/ppp', [HomeController::class, 'searching'])->name('booking.index');
 });
 
 

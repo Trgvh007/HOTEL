@@ -5,6 +5,8 @@ body {
     scroll-behavior: smooth;
 }
 
+
+
 .top-header {
     background-color: #333;
     color: white;
@@ -55,15 +57,15 @@ body {
 
 .hero-section {
     position: relative;
-    height: 100vh;
-    background-image: url("{{ asset('Cusimage/VNL.jpg') }}");
+    height: 80vh;
+    background-image: url("{{ asset('Cusimage/SunSea.jpg') }}");
     background-size: cover;
     background-position: center;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: flex-end;
-    padding-bottom: 40px;
+    padding-bottom: 10px;
 }
 
 .hero-content {
@@ -105,10 +107,11 @@ body {
     align-items: center;
     gap: 25px;
     z-index: 10;
+    bottom: -40px; /* kéo form xuống thấp hơn ảnh một chút */
 }
 
 .form-group {
-    flex: 1;
+    gap: 10px;
     display: flex;
     flex-direction: column;
 }
@@ -158,17 +161,19 @@ input[type="date"].form-control {
     pointer-events: none;
 }
 
+
+
 .btn-search {
     background: #feba02;
     color: #333;
     border: none;
-    padding: 12px 35px;
-    height: 45px;
+    padding: 8px 20px;
+    height: 44px;
     border-radius: 8px;
     font-weight: 600;
     font-size: 16px;
     cursor: pointer;
-    margin-top: 28px;
+    flex: 0 0 auto;
     white-space: nowrap;
     transition: background-color 0.2s;
 }
